@@ -1,0 +1,949 @@
+const { poolPromise } = require('./db');
+
+const fullHtml = `
+<style>
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.8); }
+}
+.flow-container-wrap .hero-tag-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+.flow-container-wrap .section-num.role    { background: var(--teal-600); font-size: 10px; }
+.flow-container-wrap .section-num.flow-tag { background: var(--blue-600); font-size: 10px; }
+
+.flow-container-wrap .h3 {
+  font-size: 15px; font-weight: 700; color: var(--slate-700);
+  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+.flow-container-wrap .h3::before {
+  content: ''; display: inline-block; width: 3px; height: 14px;
+  background: var(--teal-500); border-radius: 2px; flex-shrink: 0;
+}
+
+.flow-container-wrap .doc-list {
+  list-style: none; margin: 12px 0 16px;
+  display: flex; flex-direction: column; gap: 8px; padding-left: 0;
+}
+.flow-container-wrap .doc-list li {
+  font-size: 14px; color: var(--slate-600);
+  padding-left: 20px; position: relative; line-height: 1.6;
+}
+.flow-container-wrap .doc-list li::before {
+  content: '·'; position: absolute; left: 6px;
+  color: var(--teal-500); font-weight: 700;
+}
+.flow-container-wrap .doc-list li strong { color: var(--slate-800); font-weight: 600; }
+
+.flow-container-wrap .stat-strip {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px; margin: 24px 0;
+}
+.flow-container-wrap .stat-item {
+  background: #fff; border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md); padding: 16px 18px; text-align: center;
+}
+.flow-container-wrap .stat-num {
+  font-family: var(--font-display); font-size: 36px;
+  color: var(--teal-600); line-height: 1; margin-bottom: 6px;
+}
+.flow-container-wrap .stat-label { font-size: 12px; color: var(--slate-400); line-height: 1.4; }
+
+.flow-container-wrap .org-chart { margin: 28px 0; font-size: 13px; }
+.flow-container-wrap .org-top { display: flex; justify-content: center; margin-bottom: 0; }
+.flow-container-wrap .org-node {
+  border-radius: var(--radius-md); padding: 14px 22px;
+  text-align: center; position: relative; min-width: 160px;
+}
+.flow-container-wrap .org-node-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.flow-container-wrap .org-node-sub { font-size: 11px; opacity: .75; line-height: 1.4; }
+.flow-container-wrap .org-node.hc   { background: var(--slate-800); color: #fff; }
+.flow-container-wrap .org-node.hims { background: var(--teal-700);  color: #fff; }
+.flow-container-wrap .org-node.tm   { background: var(--teal-500);  color: #fff; }
+.flow-container-wrap .org-node.off  { background: var(--teal-100);  color: var(--teal-800); border: 1px solid var(--teal-300); }
+.flow-container-wrap .org-node.dhpm { background: var(--blue-100);  color: var(--blue-800); border: 1px solid rgba(24,95,165,.2); }
+.flow-container-wrap .org-node.base { background: var(--purple-100); color: var(--purple-600); border: 1px solid rgba(83,74,183,.2); }
+
+.flow-container-wrap .org-connector {
+  display: flex; justify-content: center; align-items: center; height: 32px;
+}
+.flow-container-wrap .org-connector-line { width: 2px; height: 100%; background: var(--slate-300); }
+.flow-container-wrap .org-branch {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 0;
+}
+.flow-container-wrap .org-branch-col {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.flow-container-wrap .org-branch-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--slate-400); margin-bottom: 10px; text-align: center;
+}
+
+.flow-container-wrap .resp-card {
+  background: #fff; border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg); overflow: hidden; margin: 20px 0; transition: box-shadow .2s;
+}
+.flow-container-wrap .resp-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.07); }
+.flow-container-wrap .resp-card-header {
+  padding: 20px 26px; display: flex; align-items: center; gap: 16px;
+}
+.flow-container-wrap .resp-card-icon {
+  width: 46px; height: 46px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-weight: 700; font-size: 13px;
+  color: #fff; flex-shrink: 0;
+}
+.flow-container-wrap .resp-card-icon.hims   { background: var(--teal-700); }
+.flow-container-wrap .resp-card-icon.tm     { background: var(--teal-500); }
+.flow-container-wrap .resp-card-icon.off-co { background: var(--blue-600); }
+.flow-container-wrap .resp-card-icon.off-ba { background: var(--purple-600); }
+.flow-container-wrap .resp-card-name {
+  font-family: var(--font-display); font-size: 20px; color: var(--slate-900);
+}
+.flow-container-wrap .resp-card-role {
+  font-size: 12px; color: var(--slate-400); margin-top: 3px; font-family: var(--font-mono);
+}
+.flow-container-wrap .resp-card-body { padding: 4px 26px 22px; }
+
+.flow-container-wrap .mgmt-layers { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.flow-container-wrap .mgmt-layer {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; border-radius: var(--radius-md); border-left: 4px solid;
+}
+.flow-container-wrap .mgmt-layer-num {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  opacity: .6; flex-shrink: 0; min-width: 24px;
+}
+.flow-container-wrap .mgmt-layer-title { font-size: 14px; font-weight: 600; flex: 1; }
+.flow-container-wrap .mgmt-layer-note { font-size: 12px; opacity: .75; flex-shrink: 0; }
+.flow-container-wrap .mgmt-layer.l1 { background: var(--teal-50);    border-color: var(--teal-600); color: var(--teal-800); }
+.flow-container-wrap .mgmt-layer.l2 { background: var(--blue-100);   border-color: var(--blue-600); color: var(--blue-800); }
+.flow-container-wrap .mgmt-layer.l3 { background: var(--purple-100); border-color: var(--purple-600); color: var(--purple-600); }
+
+.flow-container-wrap .doc-footer {
+  padding: 32px 64px; border-top: 1px solid var(--slate-200);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--slate-400);
+}
+.flow-container-wrap .doc-footer-brand {
+  font-family: var(--font-display); font-size: 14px; color: var(--teal-700);
+}
+</style>
+
+<div class="flow-container-wrap">
+
+<!-- ═══════════════════════════════════════════ SIDEBAR -->
+<nav class="sidebar" role="navigation" aria-label="Document navigation">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-system">HIS Team &middot; Lebanon Mission</div>
+    <div class="sidebar-brand-title">Roles, Responsibilities &amp; Data Flows</div>
+    <div class="sidebar-brand-sub">Internal Team Documentation v1.0</div>
+  </div>
+
+  <div class="sidebar-part">Part 1 &mdash; Team Structure</div>
+  <a class="nav-item active" href="#s1"><span class="nav-num">01</span>Overview</a>
+  <a class="nav-item" href="#s2"><span class="nav-num">02</span>Org Chart &amp; Distribution</a>
+  <a class="nav-item" href="#s3"><span class="nav-num">03</span>Management Lines</a>
+
+  <div class="sidebar-part">Part 2 &mdash; Roles &amp; Responsibilities</div>
+  <a class="nav-item" href="#r1"><span class="nav-num">R1</span>HIMS</a>
+  <a class="nav-item" href="#r2"><span class="nav-num">R2</span>HIS Team Manager</a>
+  <a class="nav-item" href="#r3"><span class="nav-num">R3</span>HIS Officers &mdash; Coordination</a>
+  <a class="nav-item" href="#r4"><span class="nav-num">R4</span>HIS Officers &mdash; Bases</a>
+
+  <div class="sidebar-part">Part 3 &mdash; Data Flows</div>
+  <a class="nav-item" href="#f1"><span class="nav-num">F1</span>Programmatic Reporting</a>
+
+  <div class="sidebar-footer">
+    Health Information System Team<br>
+    Health Department &middot; Lebanon Mission<br>
+    May 2026 &middot; Internal Use
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ MAIN -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        Health Information System Team &middot; Lebanon Mission
+      </div>
+      <h1>HIS Team<br><em>Roles, Responsibilities &amp; Data Flows</em></h1>
+      <p class="hero-sub">Comprehensive internal documentation of the Health Information System team structure, line and technical management relationships, individual role responsibilities, and end-to-end data flow processes at coordination and base levels.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Department</div>
+          <div class="hero-meta-value">Health</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Team</div>
+          <div class="hero-meta-value">HIS</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Branches</div>
+          <div class="hero-meta-value">3</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Version</div>
+          <div class="hero-meta-value">1.0 &middot; May 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+
+    <!-- ══════════ PART 1 ══════════ -->
+    <div class="part-header" id="part1">
+      <div class="part-number">1</div>
+      <div>
+        <div class="part-label">Part One</div>
+        <div class="part-title">Team Structure</div>
+        <div class="part-desc">Geographic distribution, organisational hierarchy, and management relationships</div>
+      </div>
+    </div>
+
+    <!-- S1 -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">01</div></div>
+        <div>
+          <div class="section-title">Overview</div>
+          <div class="section-sub">Team composition &middot; 7 members across 3 branches</div>
+        </div>
+      </div>
+
+      <p class="prose">The Health Information System (HIS) Team operates under the <strong>Health Department Management</strong> of the Lebanon Mission. The team is responsible for health information strategy, data management, programmatic reporting, and field-level technical support across all health programme areas.</p>
+      <p class="prose">The team is organised into three branches: a <strong>Coordination (Central) Office</strong> and two field bases &mdash; <strong>Saida Base</strong> and <strong>Tripoli Base</strong> &mdash; each covering a defined geographic catchment of health facilities and programme areas.</p>
+
+      <div class="stat-strip">
+        <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">Total Team Members</div></div>
+        <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">HIM Specialist</div></div>
+        <div class="stat-item"><div class="stat-num">1</div><div class="stat-label">HIS Team Manager</div></div>
+        <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">HIS Officers</div></div>
+        <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Branches</div></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Branch</th><th>Location</th><th>Coverage Area</th><th>HIS Staff</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Coordination Office</td><td>Central</td>
+              <td>Mission-wide oversight</td><td>HIMS &middot; HIS TM &middot; 2 HIS Officers</td>
+            </tr>
+            <tr>
+              <td>Saida Base</td><td>South Lebanon</td>
+              <td>Beirut / Mount Lebanon &middot; South / Nabatieh</td><td>2 HIS Officers</td>
+            </tr>
+            <tr>
+              <td>Tripoli Base</td><td>North Lebanon</td>
+              <td>North / Akkar &middot; Bekaa</td><td>1 HIS Officer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- S2 -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">02</div></div>
+        <div>
+          <div class="section-title">Organisational Chart &amp; Distribution</div>
+          <div class="section-sub">Reporting structure across coordination and base offices</div>
+        </div>
+      </div>
+
+      <p class="prose">The diagram below illustrates the full organisational structure of the HIS Team, from the Health Coordinator at the top of the health department to base-level HIS Officers. Both <strong>line management</strong> and <strong>technical supervision</strong> relationships are present and distinct within the team.</p>
+
+      <div class="org-chart">
+        <div class="org-top">
+          <div class="org-node hc">
+            <div class="org-node-title">Health Coordinator</div>
+            <div class="org-node-sub">Head of Health Department</div>
+          </div>
+        </div>
+        <div class="org-connector"><div class="org-connector-line"></div></div>
+
+        <div class="org-top">
+          <div class="org-node hims">
+            <div class="org-node-title">HIMS</div>
+            <div class="org-node-sub">Health Information Management Specialist<br>Coordination Office</div>
+          </div>
+        </div>
+        <div class="org-connector"><div class="org-connector-line"></div></div>
+
+        <div class="org-top">
+          <div class="org-node tm">
+            <div class="org-node-title">HIS Team Manager (HIS TM)</div>
+            <div class="org-node-sub">Coordination Office</div>
+          </div>
+        </div>
+        <div class="org-connector"><div class="org-connector-line"></div></div>
+
+        <div class="org-branch">
+          <div class="org-branch-col">
+            <div class="org-branch-label">Coordination Office</div>
+            <div class="org-node off" style="width:100%">
+              <div class="org-node-title">HIS Officer &times; 2</div>
+              <div class="org-node-sub">Programmatic Reporting</div>
+            </div>
+          </div>
+          <div class="org-branch-col">
+            <div class="org-branch-label">Saida Base</div>
+            <div class="org-node dhpm" style="width:100%;margin-bottom:10px">
+              <div class="org-node-title">DHPM &mdash; Saida</div>
+              <div class="org-node-sub">Deputy Health Programme Manager</div>
+            </div>
+            <div class="org-node base" style="width:100%">
+              <div class="org-node-title">HIS Officer &times; 2</div>
+              <div class="org-node-sub">Beirut / Mount Lebanon<br>South / Nabatieh</div>
+            </div>
+          </div>
+          <div class="org-branch-col">
+            <div class="org-branch-label">Tripoli Base</div>
+            <div class="org-node dhpm" style="width:100%;margin-bottom:10px">
+              <div class="org-node-title">DHPM &mdash; Tripoli</div>
+              <div class="org-node-sub">Deputy Health Programme Manager</div>
+            </div>
+            <div class="org-node base" style="width:100%">
+              <div class="org-node-title">HIS Officer &times; 1</div>
+              <div class="org-node-sub">North / Akkar &middot; Bekaa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="infobox teal" style="margin-top:28px">
+        <div class="infobox-icon">&#x2139;</div>
+        <div>
+          <div class="infobox-title">Dual management model at bases</div>
+          <div class="infobox-body">HIS Officers stationed at bases operate under a dual management model. Their <strong>administrative and line management</strong> sits with the Deputy Health Programme Manager (DHPM) at the respective base. Their <strong>technical supervision</strong> is carried out by the HIS Team Manager at the Coordination Office. Overall management authority for all HIS team members rests with the HIMS.</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- S3 -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">03</div></div>
+        <div>
+          <div class="section-title">Management Lines</div>
+          <div class="section-sub">Line management, technical supervision, and overall authority</div>
+        </div>
+      </div>
+
+      <p class="prose">The HIS Team operates under three distinct management relationships that must be clearly understood by all team members. These relationships define accountability, reporting pathways, and escalation channels.</p>
+
+      <div class="h3">Line Management</div>
+      <div class="mgmt-layers">
+        <div class="mgmt-layer l1">
+          <div class="mgmt-layer-num">L1</div>
+          <div class="mgmt-layer-title">Health Coordinator &rarr; HIMS</div>
+          <div class="mgmt-layer-note">Head of Department</div>
+        </div>
+        <div class="mgmt-layer l1">
+          <div class="mgmt-layer-num">L2</div>
+          <div class="mgmt-layer-title">HIMS &rarr; HIS Team Manager</div>
+          <div class="mgmt-layer-note">Coordination Office</div>
+        </div>
+        <div class="mgmt-layer l1">
+          <div class="mgmt-layer-num">L3</div>
+          <div class="mgmt-layer-title">HIS TM &rarr; HIS Officers (Coordination)</div>
+          <div class="mgmt-layer-note">Central Office Officers</div>
+        </div>
+        <div class="mgmt-layer l2">
+          <div class="mgmt-layer-num">L4</div>
+          <div class="mgmt-layer-title">DHPM &rarr; HIS Officers (Bases)</div>
+          <div class="mgmt-layer-note">Saida Base &middot; Tripoli Base</div>
+        </div>
+      </div>
+
+      <div class="h3">Technical Supervision</div>
+      <div class="mgmt-layers">
+        <div class="mgmt-layer l3">
+          <div class="mgmt-layer-num">T1</div>
+          <div class="mgmt-layer-title">HIS TM &rarr; All HIS Officers (Coordination &amp; Bases)</div>
+          <div class="mgmt-layer-note">Technical oversight</div>
+        </div>
+      </div>
+
+      <div class="h3">Overall Management Authority</div>
+      <div class="mgmt-layers">
+        <div class="mgmt-layer l1">
+          <div class="mgmt-layer-num">O1</div>
+          <div class="mgmt-layer-title">HIMS &rarr; All HIS Team Members</div>
+          <div class="mgmt-layer-note">Mission-level HIS authority</div>
+        </div>
+      </div>
+
+      <div class="infobox amber">
+        <div class="infobox-icon">&#x26A0;</div>
+        <div>
+          <div class="infobox-title">Escalation principle</div>
+          <div class="infobox-body">The HIS TM serves as the <strong>pre-final layer</strong> for all health information management decisions and approvals. The HIMS is the <strong>final layer</strong>. Issues should be escalated progressively through this chain; direct escalation to the HIMS is reserved for matters that cannot be resolved at HIS TM level.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PART 2 ══════════ -->
+    <div class="part-header" id="part2">
+      <div class="part-number">2</div>
+      <div>
+        <div class="part-label">Part Two</div>
+        <div class="part-title">Roles &amp; Responsibilities</div>
+        <div class="part-desc">Detailed responsibilities for each position within the HIS Team</div>
+      </div>
+    </div>
+
+    <!-- R1 -->
+    <section class="section" id="r1">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num role">HIMS</div></div>
+        <div>
+          <div class="section-title">Health Information Management Specialist</div>
+          <div class="section-sub">Technical Head &middot; Coordination Office &middot; Final approval authority</div>
+        </div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-card-header">
+          <div class="resp-card-icon hims">HIMS</div>
+          <div>
+            <div class="resp-card-name">HIM Specialist</div>
+            <div class="resp-card-role">Coordination Office &middot; Reports to Health Coordinator</div>
+          </div>
+        </div>
+        <div class="resp-card-body">
+          <div class="h3">Strategy &amp; Leadership</div>
+          <ul class="doc-list">
+            <li>Develops and owns the <strong>Health Information Management strategy</strong> at mission level</li>
+            <li>Defines the <strong>HIS team strategy</strong>, structures and annual workplans</li>
+            <li>Serves as the <strong>last layer of authority</strong> on all health information management decisions within the mission</li>
+            <li>Line manages the <strong>HIS Team Manager</strong> and holds overall management authority over all HIS team members</li>
+          </ul>
+          <div class="h3">Tools, Applications &amp; Development</div>
+          <ul class="doc-list">
+            <li>Leads <strong>tools and applications development</strong> for the HIS team</li>
+            <li>Oversees all <strong>health application development at MOPH level</strong></li>
+            <li>Holds <strong>final approval authority</strong> over reporting tool designs and development</li>
+            <li>Leads <strong>FFM (Field Facility Monitoring) tool</strong> design and development</li>
+            <li>Responsible for the development of new <strong>programmatic KPIs</strong></li>
+          </ul>
+          <div class="h3">Documentation</div>
+          <ul class="doc-list">
+            <li>Produces and maintains all <strong>official documentation</strong> related to data flows, databases, application usage, and tool usage</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- R2 -->
+    <section class="section" id="r2">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num role">TM</div></div>
+        <div>
+          <div class="section-title">HIS Team Manager</div>
+          <div class="section-sub">HIS TM &middot; Coordination Office &middot; Pre-final approval layer</div>
+        </div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-card-header">
+          <div class="resp-card-icon tm">TM</div>
+          <div>
+            <div class="resp-card-name">HIS Team Manager</div>
+            <div class="resp-card-role">Coordination Office &middot; Reports to HIMS</div>
+          </div>
+        </div>
+        <div class="resp-card-body">
+          <div class="h3">Team Management</div>
+          <ul class="doc-list">
+            <li><strong>Line manages</strong> HIS Officers at the Coordination Office</li>
+            <li><strong>Technically manages</strong> HIS Officers at all base offices</li>
+            <li>Provides <strong>capacity building trainings</strong> to base HIS Officers to strengthen field-team systematic processes</li>
+          </ul>
+          <div class="h3">Programmatic Reporting</div>
+          <ul class="doc-list">
+            <li>Responsible for <strong>programmatic reporting</strong> produced by Coordination Office HIS Officers</li>
+            <li>Validates ActivityInfo and sector reports requested on <strong>daily, weekly, and monthly</strong> bases</li>
+            <li>Ensures base-level HIS Officers maintain timely and accurate reporting</li>
+            <li>Ensures base HIS Officers populate data for <strong>FFM tools</strong></li>
+            <li>Assures that all programmatic <strong>KPIs are being monitored and reported</strong> appropriately</li>
+          </ul>
+          <div class="h3">Systems &amp; Applications</div>
+          <ul class="doc-list">
+            <li>Ensures all systematic modules developed on <strong>PHENICS</strong> are functioning seamlessly</li>
+            <li>Collects bugs and additional system requirements from HIS Officers, team managers, or key base staff</li>
+            <li>Co-responds to <strong>development requirements</strong> submitted by bases</li>
+            <li>Ensures data flows at base level are operating correctly</li>
+          </ul>
+          <div class="h3">MOPH Coordination</div>
+          <ul class="doc-list">
+            <li>Primary contact for the <strong>MOPH consultant</strong> on pivot table integration and KPI data</li>
+            <li>Responsible for communicating pivot integration requirements, KPI embedding, and resolving pivot extraction errors</li>
+            <li>Validates MOPH-generated data pivots before distribution to Coordination HIS Officers</li>
+          </ul>
+          <div class="infobox blue">
+            <div class="infobox-icon">&#x2139;</div>
+            <div>
+              <div class="infobox-title">Pre-final approval layer</div>
+              <div class="infobox-body">The HIS TM acts as the <strong>pre-final layer</strong> for all mission-level health information management approvals. Reporting packages, pivot validations, and system development decisions are reviewed and signed off at HIS TM level before escalation to the HIMS where required.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- R3 -->
+    <section class="section" id="r3">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num role">CO</div></div>
+        <div>
+          <div class="section-title">HIS Officers &mdash; Coordination Office</div>
+          <div class="section-sub">2 Officers &middot; Programmatic reporting &middot; Pivot validation &middot; Data quality</div>
+        </div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-card-header">
+          <div class="resp-card-icon off-co">CO</div>
+          <div>
+            <div class="resp-card-name">HIS Officers &mdash; Coordination</div>
+            <div class="resp-card-role">Coordination Office &middot; 2 Officers &middot; Report to HIS TM</div>
+          </div>
+        </div>
+        <div class="resp-card-body">
+          <div class="h3">Programmatic Reporting</div>
+          <ul class="doc-list">
+            <li>Fully dedicated to <strong>programmatic reporting</strong> for the mission</li>
+            <li>Produce and finalise all required reports and submit to the HIS TM for validation</li>
+            <li>Ensure reporting figures remain <strong>consistent and accurate</strong> across all reporting periods</li>
+          </ul>
+          <div class="h3">Data Quality &amp; Cleaning</div>
+          <ul class="doc-list">
+            <li>Perform <strong>data cleaning on a weekly or bi-weekly basis</strong></li>
+            <li>Conduct bi-weekly cross-checking of data to flag inconsistencies</li>
+            <li>Escalate unresolved data issues to the HIS TM</li>
+          </ul>
+          <div class="h3">Pivot Validation</div>
+          <ul class="doc-list">
+            <li>Validate MOPH-generated pivot tables for <strong>consistency and accuracy</strong> against internal SOPs</li>
+            <li>Ensure pivot figures align with KPIs reported to donors</li>
+            <li>Perform a <strong>second-level validation</strong> of pivots after the HIS TM&rsquo;s initial check</li>
+            <li>Report any pivot discrepancies directly to the HIS TM for follow-up with the MOPH consultant</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- R4 -->
+    <section class="section" id="r4">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num role">BA</div></div>
+        <div>
+          <div class="section-title">HIS Officers &mdash; Bases</div>
+          <div class="section-sub">3 Officers (Saida &times;2, Tripoli &times;1) &middot; Field technical support &middot; Facility follow-up</div>
+        </div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-card-header">
+          <div class="resp-card-icon off-ba">BA</div>
+          <div>
+            <div class="resp-card-name">HIS Officers &mdash; Bases</div>
+            <div class="resp-card-role">Saida Base (&times;2) &middot; Tripoli Base (&times;1) &middot; Line managed by DHPM &middot; Technically supervised by HIS TM</div>
+          </div>
+        </div>
+        <div class="resp-card-body">
+          <div class="h3">Facility &amp; Field Support</div>
+          <ul class="doc-list">
+            <li>Provide <strong>full technical support</strong> to health facilities in their coverage area</li>
+            <li>Support health field teams on systematic and data-entry processes</li>
+            <li>Follow up with <strong>facility data focal points</strong> to ensure timely and accurate data submission</li>
+          </ul>
+          <div class="h3">Data Cleaning &amp; Quality</div>
+          <ul class="doc-list">
+            <li>Perform <strong>data cleaning on a weekly or bi-weekly basis</strong> for their respective area</li>
+            <li>Report unresolved data issues to the <strong>HIS TM on a weekly basis</strong></li>
+          </ul>
+          <div class="h3">Systems &amp; Applications</div>
+          <ul class="doc-list">
+            <li>Communicate with the HIS TM for support on <strong>pricing and setups on PHENICS, MERA</strong>, and other applications</li>
+            <li>Ensure FFM tool data is populated as required by the HIS TM</li>
+          </ul>
+          <div class="infobox purple">
+            <div class="infobox-icon">&#x1F4CD;</div>
+            <div>
+              <div class="infobox-title">Geographic responsibilities</div>
+              <div class="infobox-body">
+                <ul>
+                  <li><strong>Saida Base Officers (&times;2):</strong> Beirut / Mount Lebanon and South / Nabatieh areas</li>
+                  <li><strong>Tripoli Base Officer (&times;1):</strong> North / Akkar and Bekaa areas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PART 3 ══════════ -->
+    <div class="part-header" id="part3">
+      <div class="part-number">3</div>
+      <div>
+        <div class="part-label">Part Three</div>
+        <div class="part-title">Data Flows</div>
+        <div class="part-desc">End-to-end process flows for HIS Team operational activities</div>
+      </div>
+    </div>
+
+    <!-- F1 -->
+    <section class="section" id="f1">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num flow-tag">F1</div></div>
+        <div>
+          <div class="section-title">Programmatic Reporting Flow</div>
+          <div class="section-sub">Monthly data cycle &middot; From data cleaning through final reporting package delivery</div>
+        </div>
+      </div>
+
+      <p class="prose">The programmatic reporting flow covers the full monthly cycle &mdash; from ongoing data cleaning at base level through pivot validation, report production, programme-side validation, and final delivery to the Deputy Health Coordinator. Each stage has a defined responsible actor and escalation path.</p>
+
+      <div class="infobox teal">
+        <div class="infobox-icon">&#x1F4C5;</div>
+        <div>
+          <div class="infobox-title">Monthly cycle timing</div>
+          <div class="infobox-body">System closure occurs on the <strong>second working day of the month</strong>. MOPH pivot generation typically occurs the day after closure. All post-closure data cleaning issues must be reported by email to the HIS TM with HIMS and Health Coordinator copied.</div>
+        </div>
+      </div>
+
+      <div class="flow">
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--purple-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--purple-600)">HIS Officers &mdash; Bases</div>
+            <h4>Ongoing Data Cleaning</h4>
+            <p>Throughout the month, base HIS Officers perform continuous data cleaning within their respective coverage areas. All identified but unresolved issues are documented and reported to the HIS TM on a weekly basis.</p>
+            <div class="flow-tags">
+              <span class="tag badge-purple">Weekly reporting</span>
+              <span class="tag badge-slate">During month</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--blue-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--blue-600)">HIS Officers &mdash; Coordination</div>
+            <h4>Bi-Weekly Data Checking</h4>
+            <p>Coordination Office HIS Officers perform bi-weekly data verification checks. They report findings directly to the HIS TM and may coordinate with base HIS Officers to resolve outstanding issues.</p>
+            <div class="flow-tags">
+              <span class="tag badge-blue">Bi-weekly</span>
+              <span class="tag badge-slate">Reports to HIS TM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--teal-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--teal-600)">System</div>
+            <h4>System Closure</h4>
+            <p>The system is closed on the <strong>second working day of the month</strong>. Any data cleaning issues identified after closure must be reported immediately to the HIS TM by email, with the HIMS and Health Coordinator copied.</p>
+            <div class="flow-tags">
+              <span class="tag badge-teal">2nd working day</span>
+              <span class="tag badge-amber">Email: HIS TM cc HIMS &amp; Health Coord.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--teal-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--teal-600)">MOPH</div>
+            <h4>Pivot Generation</h4>
+            <p>MOPH generates the data pivot tables, typically on the day following system closure. These pivots are the basis for all programmatic KPI reporting.</p>
+            <div class="flow-tags">
+              <span class="tag badge-teal">Typically day after closure</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--teal-500)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--teal-500)">HIS Team Manager</div>
+            <h4>First Pivot Validation</h4>
+            <p>The HIS TM performs the primary review of the MOPH-generated pivot, checking for missing parameters and data integrity issues. If issues are found, the HIS TM contacts the MOPH consultant directly to request a corrected pivot.</p>
+            <div class="flow-tags">
+              <span class="tag badge-teal">Primary validation</span>
+              <span class="tag badge-slate">MOPH consultant follow-up if needed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--blue-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--blue-600)">HIS Officers &mdash; Coordination</div>
+            <h4>Second Pivot Validation</h4>
+            <p>After the HIS TM&rsquo;s initial review, Coordination HIS Officers conduct a second-level validation of the pivot against internal SOPs and donor-reported KPIs. Any identified discrepancies are reported directly to the HIS TM, who follows up with the MOPH consultant and obtains a corrected pivot if required.</p>
+            <div class="flow-tags">
+              <span class="tag badge-blue">Second-level validation</span>
+              <span class="tag badge-slate">SOP alignment &amp; KPI check</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--blue-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--blue-600)">HIS Officers &mdash; Coordination</div>
+            <h4>Report Finalisation</h4>
+            <p>Once pivots are validated, Coordination HIS Officers complete and finalise all programmatic reports using the validated pivot data, then submit the reporting package to the HIS TM.</p>
+            <div class="flow-tags">
+              <span class="tag badge-blue">Submit to HIS TM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--teal-500)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--teal-500)">HIS Team Manager</div>
+            <h4>Report Validation &amp; Sharing with DPMs</h4>
+            <p>The HIS TM reviews and validates the final reporting package, then shares it with the Deputy Programme Managers (DPMs) at the bases for programme-side logical review.</p>
+            <div class="flow-tags">
+              <span class="tag badge-teal">HIS TM validation</span>
+              <span class="tag badge-slate">Distributed to DPMs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--amber-600)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--amber-600)">Deputy Programme Managers (DPMs)</div>
+            <h4>Programme-Side Validation</h4>
+            <p>DPMs at each base review the reporting figures for logical coherence from the programme perspective. Any discrepancies or concerns are communicated directly to the HIS TM. Upon satisfactory review, the DPM sends an official confirmation email validating the package from the programme side.</p>
+            <div class="flow-tags">
+              <span class="tag badge-amber">Logical validation</span>
+              <span class="tag badge-green">Official email confirmation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--teal-500)"></div>
+            <div class="flow-line" style="background:var(--slate-200)"></div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-card-actor" style="color:var(--teal-500)">HIS Team Manager</div>
+            <h4>Reporting Package Delivery to DHC</h4>
+            <p>Following DPM validation, the HIS TM sends the finalised reporting package to the <strong>Deputy Health Coordinator (DHC)</strong> by email. Any issues raised by the DHC are directed back to the HIS TM, with the HIMS copied into the communication loop.</p>
+            <div class="flow-tags">
+              <span class="tag badge-teal">Email to DHC</span>
+              <span class="tag badge-slate">HIMS looped for issues</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-item">
+          <div class="flow-spine">
+            <div class="flow-dot" style="background:var(--green-600)"></div>
+          </div>
+          <div class="flow-card" style="border-color:var(--green-600);background:var(--green-100)">
+            <div class="flow-card-actor" style="color:var(--green-600)">Deputy Health Coordinator</div>
+            <h4 style="color:var(--green-600)">Reporting Cycle Complete</h4>
+            <p style="color:var(--green-600)">The reporting package is received and reviewed by the DHC. The monthly programmatic reporting cycle is closed. Any issues raised are escalated through the HIS TM, looping in the HIMS as required.</p>
+            <div class="flow-tags">
+              <span class="tag badge-green">Cycle closed</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="h3">Flow Summary &mdash; Actors &amp; Actions</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Step</th><th>Actor</th><th>Action</th><th>Escalation Path</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><span class="badge badge-purple">HIS Officers &mdash; Bases</span></td>
+              <td>Ongoing data cleaning during the month</td>
+              <td>Weekly report to HIS TM</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><span class="badge badge-blue">HIS Officers &mdash; Coord.</span></td>
+              <td>Bi-weekly data checking</td>
+              <td>Report to HIS TM; coordinate with bases</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><span class="badge badge-teal">System</span></td>
+              <td>System closure (2nd working day)</td>
+              <td>Post-closure issues: email HIS TM cc HIMS &amp; HC</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><span class="badge badge-teal">MOPH</span></td>
+              <td>Pivot generation</td>
+              <td>&mdash;</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><span class="badge badge-teal">HIS TM</span></td>
+              <td>First pivot validation</td>
+              <td>Issues &rarr; MOPH consultant</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><span class="badge badge-blue">HIS Officers &mdash; Coord.</span></td>
+              <td>Second pivot validation</td>
+              <td>Issues &rarr; HIS TM &rarr; MOPH consultant</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><span class="badge badge-blue">HIS Officers &mdash; Coord.</span></td>
+              <td>Report finalisation &amp; submission</td>
+              <td>Submit to HIS TM</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><span class="badge badge-teal">HIS TM</span></td>
+              <td>Report validation &amp; sharing with DPMs</td>
+              <td>&mdash;</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><span class="badge badge-amber">DPMs</span></td>
+              <td>Programme-side logical validation</td>
+              <td>Issues &rarr; HIS TM; confirmation email when approved</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><span class="badge badge-teal">HIS TM</span></td>
+              <td>Package delivery to DHC</td>
+              <td>DHC issues &rarr; HIS TM cc HIMS</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="infobox green">
+        <div class="infobox-icon">&#x2713;</div>
+        <div>
+          <div class="infobox-title">Additional flows &mdash; coming soon</div>
+          <div class="infobox-body">Further data flows covering other HIS Team operational processes will be added to this documentation in subsequent revisions. All team members will be notified when new flows are published on the HIS Hub.</div>
+        </div>
+      </div>
+
+    </section>
+
+  </div><!-- /content-wrap -->
+
+  <footer class="doc-footer">
+    <div class="doc-footer-brand">HIS Team</div>
+    <div>Health Information System &middot; Health Department &middot; Lebanon Mission</div>
+    <div>Roles, Responsibilities &amp; Data Flows v1.0 &middot; May 2026 &middot; Internal Use</div>
+  </footer>
+
+</main>
+</div>
+`;
+
+async function seedFlow() {
+    try {
+        const pool = await poolPromise;
+        const existing = await pool.request()
+            .input('Title', 'HIS Team Roles, Responsibilities & Data Flows')
+            .query('SELECT Id FROM DataFlows WHERE Title = @Title');
+
+        if (existing.recordset.length > 0) {
+            await pool.request()
+                .input('Title', 'HIS Team Roles, Responsibilities & Data Flows')
+                .input('Subtitle', 'Internal Team Documentation')
+                .input('SystemName', 'HIS Team')
+                .input('Program', 'Team Structure & Data Flows')
+                .input('Version', '1.0')
+                .input('DocumentDate', 'May 2026')
+                .input('HtmlContent', fullHtml)
+                .query(`
+                    UPDATE DataFlows
+                    SET Subtitle = @Subtitle, SystemName = @SystemName, Program = @Program,
+                        Version = @Version, DocumentDate = @DocumentDate, HtmlContent = @HtmlContent
+                    WHERE Title = @Title
+                `);
+            console.log('Updated HIS Team Roles flow successfully.');
+        } else {
+            await pool.request()
+                .input('Title', 'HIS Team Roles, Responsibilities & Data Flows')
+                .input('Subtitle', 'Internal Team Documentation')
+                .input('SystemName', 'HIS Team')
+                .input('Program', 'Team Structure & Data Flows')
+                .input('Version', '1.0')
+                .input('DocumentDate', 'May 2026')
+                .input('HtmlContent', fullHtml)
+                .query(`
+                    INSERT INTO DataFlows (Title, Subtitle, SystemName, Program, Version, DocumentDate, HtmlContent)
+                    VALUES (@Title, @Subtitle, @SystemName, @Program, @Version, @DocumentDate, @HtmlContent)
+                `);
+            console.log('Seeded HIS Team Roles flow successfully.');
+        }
+        process.exit(0);
+    } catch (err) {
+        console.error('Seeding failed:', err);
+        process.exit(1);
+    }
+}
+
+seedFlow();
