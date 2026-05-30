@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Type, AlertCircle } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { ArrowLeft, Save, Plus, Trash2, Edit3, Type, Info, CheckCircle2 } from 'lucide-react';
+import { API_BASE_URL, fetchApi } from '../config';
 
 const FlowBuilder = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const FlowBuilder = () => {
 
   useEffect(() => {
     if (id) {
-      fetch(`${API_BASE_URL}/flows/${id}`)
+      fetchApi(`${API_BASE_URL}/flows/${id}`)
         .then(res => res.json())
         .then(data => {
           if (data.BuilderState) {
@@ -228,7 +228,7 @@ const FlowBuilder = () => {
     const method = id ? 'PUT' : 'POST';
     const url = id ? `${API_BASE_URL}/flows/${id}` : `${API_BASE_URL}/flows`;
 
-    fetch(url, {
+    fetchApi(url, {
       method: method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

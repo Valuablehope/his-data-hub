@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Plus, FileText } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, fetchApi } from '../config';
 
 const Flows = () => {
   const [flows, setFlows] = useState([]);
@@ -9,7 +9,7 @@ const Flows = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/flows`)
+    fetchApi(`${API_BASE_URL}/flows`)
       .then(res => res.json())
       .then(data => {
         setFlows(data);

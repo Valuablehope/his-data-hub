@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File as FileIcon, Download, Clock, User, FileText, FileBadge, Trash2 } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, fetchApi } from '../config';
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -9,7 +9,7 @@ const Files = () => {
   const fileInputRef = useRef(null);
 
   const fetchFiles = () => {
-    fetch(`${API_BASE_URL}/files`)
+    fetchApi(`${API_BASE_URL}/files`)
       .then(res => res.json())
       .then(data => {
         setFiles(data);
@@ -40,7 +40,7 @@ const Files = () => {
     const formData = new FormData();
     formData.append('document', file);
 
-    fetch(`${API_BASE_URL}/files/upload`, {
+    fetchApi(`${API_BASE_URL}/files/upload`, {
       method: 'POST',
       body: formData,
     })
@@ -68,7 +68,7 @@ const Files = () => {
   const handleDelete = (id) => {
     if (!window.confirm("Are you sure you want to delete this document?")) return;
     
-    fetch(`${API_BASE_URL}/files/${id}`, {
+    fetchApi(`${API_BASE_URL}/files/${id}`, {
       method: 'DELETE',
     })
     .then(res => {
