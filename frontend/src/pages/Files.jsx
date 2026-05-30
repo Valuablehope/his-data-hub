@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File as FileIcon, Download, Clock, User, FileText, FileBadge, Trash2 } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const Files = () => {
   const [files, setFiles] = useState([]);
@@ -8,7 +9,7 @@ const Files = () => {
   const fileInputRef = useRef(null);
 
   const fetchFiles = () => {
-    fetch('http://localhost:5000/api/files')
+    fetch(`${API_BASE_URL}/files`)
       .then(res => res.json())
       .then(data => {
         setFiles(data);
@@ -39,7 +40,7 @@ const Files = () => {
     const formData = new FormData();
     formData.append('document', file);
 
-    fetch('http://localhost:5000/api/files/upload', {
+    fetch(`${API_BASE_URL}/files/upload`, {
       method: 'POST',
       body: formData,
     })
@@ -67,7 +68,7 @@ const Files = () => {
   const handleDelete = (id) => {
     if (!window.confirm("Are you sure you want to delete this document?")) return;
     
-    fetch(`http://localhost:5000/api/files/${id}`, {
+    fetch(`${API_BASE_URL}/files/${id}`, {
       method: 'DELETE',
     })
     .then(res => {
@@ -169,7 +170,7 @@ const Files = () => {
                     <Trash2 size={18} />
                   </button>
                   <a 
-                    href={`http://localhost:5000/api/files/download/${file.Id}`} 
+                    href={`${API_BASE_URL}/files/download/${file.Id}`}
                     className="btn btn-ghost" 
                     style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(0,0,0,0.03)' }}
                     title="Download"

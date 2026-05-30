@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit3, Download } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -13,7 +14,7 @@ const FlowViewer = () => {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/flows/${id}`)
+    fetch(`${API_BASE_URL}/flows/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Flow not found');
         return res.json();

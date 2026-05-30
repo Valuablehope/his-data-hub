@@ -149,6 +149,29 @@ body {
   box-shadow: 0 0 15px var(--primary-red-glow);
 }
 
+.nav-soon-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(217, 119, 6, 0.12);
+  color: #B45309;
+  border: 1px solid rgba(217, 119, 6, 0.28);
+  border-radius: 4px;
+  padding: 1px 5px;
+  line-height: 1.5;
+  margin-left: 2px;
+  flex-shrink: 0;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Stays readable when the pill goes red on active */
+.nav-item.active .nav-soon-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
 .nav-actions {
   display: flex;
   align-items: center;

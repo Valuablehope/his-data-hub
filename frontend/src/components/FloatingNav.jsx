@@ -29,10 +29,12 @@ const FloatingNav = () => {
           <NavLink to="/" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Activity size={16} />
             <span>Dashboard</span>
+            <span className="nav-soon-badge">Soon</span>
           </NavLink>
           <NavLink to="/documentation" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <FileText size={16} />
             <span>SOPs</span>
+            <span className="nav-soon-badge">Soon</span>
           </NavLink>
           <NavLink to="/flows" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Network size={16} />
@@ -41,6 +43,7 @@ const FloatingNav = () => {
           <NavLink to="/forms" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <ClipboardCheck size={16} />
             <span>Forms</span>
+            <span className="nav-soon-badge">Soon</span>
           </NavLink>
           <NavLink to="/files" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <FolderOpen size={16} />
