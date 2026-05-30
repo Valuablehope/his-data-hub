@@ -5,6 +5,7 @@ import {
   FileText, 
   Network, 
   ClipboardCheck,
+  FolderOpen,
   Search,
   UserCircle,
   LogOut
@@ -19,7 +20,7 @@ const FloatingNav = () => {
       <div className="floating-nav">
         <div className="nav-logo">
            <div className="nav-logo-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              <img src="/logo.png" alt="Platform Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
            </div>
            <span className="nav-logo-text">HIS DATA HUB</span>
         </div>
@@ -40,6 +41,10 @@ const FloatingNav = () => {
           <NavLink to="/forms" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <ClipboardCheck size={16} />
             <span>Forms</span>
+          </NavLink>
+          <NavLink to="/files" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+            <FolderOpen size={16} />
+            <span>Files</span>
           </NavLink>
           <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
           <a href="https://tixo.cubiq-solutions.com/" target="_blank" rel="noopener noreferrer" className="nav-item">

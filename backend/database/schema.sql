@@ -77,21 +77,18 @@ IF NOT EXISTS (
 )
 BEGIN
     CREATE TABLE dbo.DataFlows (
-        Id          INT            IDENTITY(1,1) NOT NULL,
-        Name        NVARCHAR(255)  NOT NULL,
-        Source      NVARCHAR(100)  NOT NULL,
-        Destination NVARCHAR(100)  NOT NULL,
-        Status      VARCHAR(50)    NOT NULL CONSTRAINT DF_DataFlows_Status DEFAULT 'Healthy',
-        -- 'Healthy' | 'Warning' | 'Error'
-        LastSync    DATETIME       NULL     CONSTRAINT DF_DataFlows_LastSync DEFAULT GETDATE(),
-        Type        VARCHAR(50)    NOT NULL CONSTRAINT DF_DataFlows_Type DEFAULT 'Unidirectional',
-        -- 'Unidirectional' | 'Bidirectional'
-        IsActive    BIT            NOT NULL CONSTRAINT DF_DataFlows_IsActive DEFAULT 1,
-        CreatedAt   DATETIME       NOT NULL CONSTRAINT DF_DataFlows_CreatedAt DEFAULT GETDATE(),
+        Id           INT            IDENTITY(1,1) NOT NULL,
+        Title        NVARCHAR(255)  NOT NULL,
+        Subtitle     NVARCHAR(500)  NULL,
+        SystemName   NVARCHAR(100)  NULL,
+        Program      NVARCHAR(100)  NULL,
+        Version      NVARCHAR(50)   NULL,
+        DocumentDate NVARCHAR(50)   NULL,
+        HtmlContent  NVARCHAR(MAX)  NOT NULL,
+        IsActive     BIT            NOT NULL CONSTRAINT DF_DataFlows_IsActive DEFAULT 1,
+        CreatedAt    DATETIME       NOT NULL CONSTRAINT DF_DataFlows_CreatedAt DEFAULT GETDATE(),
 
-        CONSTRAINT PK_DataFlows PRIMARY KEY CLUSTERED (Id),
-        CONSTRAINT CK_DataFlows_Status CHECK (Status IN ('Healthy', 'Warning', 'Error')),
-        CONSTRAINT CK_DataFlows_Type   CHECK (Type   IN ('Unidirectional', 'Bidirectional'))
+        CONSTRAINT PK_DataFlows PRIMARY KEY CLUSTERED (Id)
     );
 
     PRINT 'Table dbo.DataFlows created.';
@@ -133,6 +130,30 @@ BEGIN
     CREATE NONCLUSTERED INDEX IX_ActivityForms_SubmittedAt ON dbo.ActivityForms (SubmittedAt DESC);
 
     PRINT 'Table dbo.ActivityForms created.';
+END
+GO
+
+-- ============================================================
+-- 5. UploadedFiles
+--    Tracks uploaded documents (PDFs, DOCX) in the Document Vault.
+-- ============================================================
+IF NOT EXISTS (
+    SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'UploadedFiles'
+)
+BEGIN
+    CREATE TABLE dbo.UploadedFiles (
+        Id           INT            IDENTITY(1,1) NOT NULL,
+        FileName     NVARCHAR(255)  NOT NULL,
+        OriginalName NVARCHAR(255)  NOT NULL,
+        MimeType     VARCHAR(100)   NOT NULL,
+        Size         INT            NOT NULL,
+        UploadedBy   VARCHAR(50)    NOT NULL CONSTRAINT DF_UploadedFiles_UploadedBy DEFAULT 'admin',
+        CreatedAt    DATETIME       NOT NULL CONSTRAINT DF_UploadedFiles_CreatedAt DEFAULT GETDATE(),
+
+        CONSTRAINT PK_UploadedFiles PRIMARY KEY CLUSTERED (Id)
+    );
+    PRINT 'Table dbo.UploadedFiles created.';
 END
 GO
 

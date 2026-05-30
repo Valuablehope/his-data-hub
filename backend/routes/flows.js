@@ -2,25 +2,108 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 
-// Get all flows
+// Get all flows (metadata only for list view)
 router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
-        const result = await pool.request().query('SELECT * FROM DataFlows');
+        const result = await pool.request().query('SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt FROM DataFlows WHERE IsActive = 1 ORDER BY CreatedAt DESC');
         res.json(result.recordset);
     } catch (err) {
         console.error("DB Error:", err);
-        res.json([
-            { id: 1, name: 'Patient Admissions Sync', source: 'HIS Local DB', dest: 'PHENICS Master', status: 'Healthy', lastSync: '2 mins ago', type: 'Bidirectional' },
-            { id: 2, name: 'Lab Results Export', source: 'LIS Module', dest: 'PHENICS Lab Endpoint', status: 'Healthy', lastSync: '5 mins ago', type: 'Unidirectional' }
-        ]);
+        res.status(500).json({ error: 'Failed to fetch flows' });
+    }
+});
+
+// Get single flow by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input('Id', req.params.id)
+            .query('SELECT * FROM DataFlows WHERE Id = @Id AND IsActive = 1');
+        
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ error: 'Flow not found' });
+        }
+        res.json(result.recordset[0]);
+    } catch (err) {
+        console.error("DB Error:", err);
+        res.status(500).json({ error: 'Failed to fetch flow' });
     }
 });
 
 // Create new flow
 router.post('/', async (req, res) => {
-    // Insert logic would go here
-    res.status(201).json({ message: 'Flow created successfully' });
+    try {
+        const { title, subtitle, systemName, program, version, documentDate, htmlContent, builderState } = req.body;
+        
+        if (!title || !htmlContent) {
+            return res.status(400).json({ error: 'Title and HTML content are required' });
+        }
+
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input('Title', title)
+            .input('Subtitle', subtitle || '')
+            .input('SystemName', systemName || '')
+            .input('Program', program || '')
+            .input('Version', version || '')
+            .input('DocumentDate', documentDate || '')
+            .input('HtmlContent', htmlContent)
+            .input('BuilderState', builderState ? JSON.stringify(builderState) : null)
+            .query(`
+                INSERT INTO DataFlows (Title, Subtitle, SystemName, Program, Version, DocumentDate, HtmlContent, BuilderState)
+                OUTPUT INSERTED.*
+                VALUES (@Title, @Subtitle, @SystemName, @Program, @Version, @DocumentDate, @HtmlContent, @BuilderState)
+            `);
+
+        res.status(201).json(result.recordset[0]);
+    } catch (err) {
+        console.error("DB Error:", err);
+        res.status(500).json({ error: 'Failed to create flow' });
+    }
+});
+
+// Update existing flow
+router.put('/:id', async (req, res) => {
+    try {
+        const { title, subtitle, systemName, program, version, documentDate, htmlContent, builderState } = req.body;
+        
+        if (!title || !htmlContent) {
+            return res.status(400).json({ error: 'Title and HTML content are required' });
+        }
+
+        const pool = await poolPromise;
+        
+        const check = await pool.request().input('Id', req.params.id).query('SELECT Id FROM DataFlows WHERE Id = @Id');
+        if (check.recordset.length === 0) {
+            return res.status(404).json({ error: 'Flow not found' });
+        }
+
+        const result = await pool.request()
+            .input('Id', req.params.id)
+            .input('Title', title)
+            .input('Subtitle', subtitle || '')
+            .input('SystemName', systemName || '')
+            .input('Program', program || '')
+            .input('Version', version || '')
+            .input('DocumentDate', documentDate || '')
+            .input('HtmlContent', htmlContent)
+            .input('BuilderState', builderState ? JSON.stringify(builderState) : null)
+            .query(`
+                UPDATE DataFlows 
+                SET Title = @Title, Subtitle = @Subtitle, SystemName = @SystemName, 
+                    Program = @Program, Version = @Version, DocumentDate = @DocumentDate, 
+                    HtmlContent = @HtmlContent, BuilderState = @BuilderState
+                OUTPUT INSERTED.*
+                WHERE Id = @Id
+            `);
+
+        res.json(result.recordset[0]);
+    } catch (err) {
+        console.error("DB Error:", err);
+        res.status(500).json({ error: 'Failed to update flow' });
+    }
 });
 
 const { createTixoTicket } = require('../services/tixoService');

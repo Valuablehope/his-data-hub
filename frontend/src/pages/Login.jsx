@@ -21,8 +21,8 @@ const Login = () => {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg-color)' }}>
       <div className="bento-item" style={{ width: '100%', maxWidth: '400px', padding: '3rem 2rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2.5rem' }}>
-          <div className="nav-logo-icon" style={{ width: '48px', height: '48px', marginBottom: '1rem', background: 'rgba(227, 0, 15, 0.1)' }}>
-            <ShieldCheck size={24} color="var(--primary-red)" />
+          <div className="nav-logo-icon" style={{ width: '64px', height: '64px', marginBottom: '1rem', background: 'transparent' }}>
+            <img src="/logo.png" alt="HIS Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: '600' }}>HIS Data Hub</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Secure Portal Authentication</p>

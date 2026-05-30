@@ -18,11 +18,13 @@ app.get('/api/health', (req, res) => {
 
 const formsRouter = require('./routes/forms');
 const flowsRouter = require('./routes/flows');
+const filesRouter = require('./routes/files');
 
 app.use('/api/docs', docsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/forms', formsRouter);
 app.use('/api/flows', flowsRouter);
+app.use('/api/files', filesRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
