@@ -41,13 +41,7 @@ async function importData() {
       console.log(`  -> Clearing existing data in ${table}...`);
       await pool.request().query(`DELETE FROM ${table}`);
 
-      if (hasId) {
-        try {
-          await pool.request().query(`SET IDENTITY_INSERT ${table} ON`);
-        } catch (e) {
-            // Ignore if table doesn't have an identity column despite having an 'Id' field
-        }
-      }
+
 
       for (const record of records) {
         const request = pool.request();
@@ -61,15 +55,16 @@ async function importData() {
             request.input(col, record[col]);
         });
 
-        const query = `INSERT INTO ${table} (${colNames.join(', ')}) VALUES (${paramNames.join(', ')})`;
+        let query = `INSERT INTO ${table} (${colNames.join(', ')}) VALUES (${paramNames.join(', ')})`;
+        if (hasId) {
+          query = `IF OBJECTPROPERTY(OBJECT_ID('${table}'), 'TableHasIdentity') = 1 SET IDENTITY_INSERT ${table} ON; ` + 
+                  query + 
+                  `; IF OBJECTPROPERTY(OBJECT_ID('${table}'), 'TableHasIdentity') = 1 SET IDENTITY_INSERT ${table} OFF;`;
+        }
         await request.query(query);
       }
 
-      if (hasId) {
-        try {
-          await pool.request().query(`SET IDENTITY_INSERT ${table} OFF`);
-        } catch (e) {}
-      }
+
       
       console.log(`  -> Imported ${records.length} rows into ${table}.`);
     }
