@@ -1,23 +1,15 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
 import FloatingNav from './components/FloatingNav';
 import Dashboard from './pages/Dashboard';
 import Documentation from './pages/Documentation';
 import Flows from './pages/Flows';
 import Forms from './pages/Forms';
 import Files from './pages/Files';
-import Login from './pages/Login';
 import FlowViewer from './pages/FlowViewer';
 import FlowBuilder from './pages/FlowBuilder';
 
-const AuthenticatedApp = () => {
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Login />;
-  }
-
+function App() {
   return (
     <Router>
       <div className="app-container">
@@ -37,14 +29,6 @@ const AuthenticatedApp = () => {
         </main>
       </div>
     </Router>
-  );
-};
-
-function App() {
-  return (
-    <AuthProvider>
-      <AuthenticatedApp />
-    </AuthProvider>
   );
 }
 

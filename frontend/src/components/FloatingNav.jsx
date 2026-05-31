@@ -7,13 +7,10 @@ import {
   ClipboardCheck,
   FolderOpen,
   Search,
-  UserCircle,
-  LogOut
+  UserCircle
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 
 const FloatingNav = () => {
-  const { logout } = useAuth();
 
   return (
     <div className="floating-nav-wrapper">
@@ -62,10 +59,6 @@ const FloatingNav = () => {
           </button>
           <button className="icon-btn" title="Profile">
             <UserCircle size={20} />
-          </button>
-          <div style={{ width: '1px', height: '24px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
-          <button className="icon-btn" onClick={logout} title="Logout" style={{ color: 'var(--primary-red)' }}>
-            <LogOut size={18} />
           </button>
         </div>
       </div>
