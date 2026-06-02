@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  Activity, 
-  FileText, 
-  Network, 
+import {
+  Activity,
+  FileText,
+  Network,
   ClipboardCheck,
   FolderOpen,
+  Building2,
   Search,
   UserCircle
 } from 'lucide-react';
@@ -45,6 +46,10 @@ const FloatingNav = () => {
           <NavLink to="/files" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <FolderOpen size={16} />
             <span>Files</span>
+          </NavLink>
+          <NavLink to="/facilities" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+            <Building2 size={16} />
+            <span>Facilities</span>
           </NavLink>
           <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
           <a href="https://tixo.cubiq-solutions.com/" target="_blank" rel="noopener noreferrer" className="nav-item">
