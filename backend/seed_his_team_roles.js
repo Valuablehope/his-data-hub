@@ -515,7 +515,7 @@ const fullHtml = `
         <div class="section-badge"><div class="section-num role">CO</div></div>
         <div>
           <div class="section-title">HIS Officers &mdash; Coordination Office</div>
-          <div class="section-sub">2 Officers &middot; Programmatic reporting &middot; Pivot validation &middot; Data quality</div>
+          <div class="section-sub">2 Officers &middot; Programmatic reporting &middot; Pivot validation &middot; Data verification</div>
         </div>
       </div>
       <div class="resp-card">
@@ -533,11 +533,10 @@ const fullHtml = `
             <li>Produce and finalise all required reports and submit to the HIS TM for validation</li>
             <li>Ensure reporting figures remain <strong>consistent and accurate</strong> across all reporting periods</li>
           </ul>
-          <div class="h3">Data Quality &amp; Cleaning</div>
+          <div class="h3">Data Verification</div>
           <ul class="doc-list">
-            <li>Perform <strong>data cleaning on a weekly or bi-weekly basis</strong></li>
-            <li>Conduct bi-weekly cross-checking of data to flag inconsistencies</li>
-            <li>Escalate unresolved data issues to the HIS TM</li>
+            <li>Conduct <strong>bi-weekly second-layer verification</strong> of data submitted by base HIS Officers to identify and flag inconsistencies</li>
+            <li>Flag identified data quality issues to the relevant base HIS Officers for cleaning; escalate unresolved issues to the HIS TM</li>
           </ul>
           <div class="h3">Pivot Validation</div>
           <ul class="doc-list">
@@ -657,10 +656,10 @@ const fullHtml = `
           </div>
           <div class="flow-card">
             <div class="flow-card-actor" style="color:var(--blue-600)">HIS Officers &mdash; Coordination</div>
-            <h4>Bi-Weekly Data Checking</h4>
-            <p>Coordination Office HIS Officers perform bi-weekly data verification checks. They report findings directly to the HIS TM and may coordinate with base HIS Officers to resolve outstanding issues.</p>
+            <h4>Bi-Weekly Second-Layer Data Verification</h4>
+            <p>Coordination Office HIS Officers perform bi-weekly <strong>second-layer verification</strong> of data submitted by base offices. Data quality issues identified are flagged directly to the relevant base HIS Officers for cleaning, with findings reported to the HIS TM.</p>
             <div class="flow-tags">
-              <span class="tag badge-blue">Bi-weekly</span>
+              <span class="tag badge-blue">Second-layer verification</span>
               <span class="tag badge-slate">Reports to HIS TM</span>
             </div>
           </div>
@@ -824,8 +823,8 @@ const fullHtml = `
             <tr>
               <td>2</td>
               <td><span class="badge badge-blue">HIS Officers &mdash; Coord.</span></td>
-              <td>Bi-weekly data checking</td>
-              <td>Report to HIS TM; coordinate with bases</td>
+              <td>Bi-weekly second-layer data verification</td>
+              <td>Flag issues to base HIS Officers for cleaning; report to HIS TM</td>
             </tr>
             <tr>
               <td>3</td>
