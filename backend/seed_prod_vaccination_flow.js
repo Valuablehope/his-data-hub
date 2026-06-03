@@ -1,9 +1,8 @@
-// ─── FILL IN PRODUCTION CREDENTIALS ─────────────────────────────────────────
-const DB_SERVER   = '';
-const DB_DATABASE = '';
-const DB_USER     = '';
-const DB_PASSWORD = '';
-// ─────────────────────────────────────────────────────────────────────────────
+const DB_SERVER   = 'Health-HIS-WS';
+const DB_INSTANCE = 'SQLEXPRESS';
+const DB_DATABASE = 'HISDataHub';
+const DB_USER     = 'sa';
+const DB_PASSWORD = 'Divine_the_Legend007';
 
 const sql = require('mssql');
 
@@ -264,7 +263,11 @@ async function run() {
         password: DB_PASSWORD,
         server: DB_SERVER,
         database: DB_DATABASE,
-        options: { encrypt: true, trustServerCertificate: true }
+        options: {
+            instanceName: DB_INSTANCE,
+            encrypt: true,
+            trustServerCertificate: true
+        }
     }).connect();
 
     console.log('Connected to production DB.');
