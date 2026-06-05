@@ -1,5 +1,7 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import UserMenu from './UserMenu';
 import {
   Activity,
   FileText,
@@ -8,10 +10,14 @@ import {
   FolderOpen,
   Building2,
   Search,
-  UserCircle
+  UserCircle,
+  LogOut,
+  LogIn
 } from 'lucide-react';
 
 const FloatingNav = () => {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   return (
     <div className="floating-nav-wrapper">
@@ -27,7 +33,6 @@ const FloatingNav = () => {
           <NavLink to="/" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Activity size={16} />
             <span>Dashboard</span>
-            <span className="nav-soon-badge">Soon</span>
           </NavLink>
           <NavLink to="/documentation" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <FileText size={16} />
@@ -51,6 +56,7 @@ const FloatingNav = () => {
             <Building2 size={16} />
             <span>Facilities</span>
           </NavLink>
+
           <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
           <a href="https://tixo.cubiq-solutions.com/" target="_blank" rel="noopener noreferrer" className="nav-item">
             <img src={`${import.meta.env.BASE_URL}favicon_TIXO.svg`} alt="TIXO" width="16" height="16" style={{ flexShrink: 0 }} />
@@ -58,13 +64,20 @@ const FloatingNav = () => {
           </a>
         </div>
 
-        <div className="nav-actions">
+        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button className="icon-btn" title="Search (Ctrl+K)">
             <Search size={18} />
           </button>
-          <button className="icon-btn" title="Profile">
-            <UserCircle size={20} />
-          </button>
+          
+          <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.25rem' }}></div>
+          
+          {user ? (
+            <UserMenu />
+          ) : (
+            <button onClick={() => navigate('/login')} className="icon-btn" title="HIS Login" style={{ color: 'var(--teal-600)' }}>
+              <LogIn size={18} />
+            </button>
+          )}
         </div>
       </div>
     </div>
