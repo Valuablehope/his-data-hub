@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL, fetchApi } from '../config';
 import { Edit3, Check, X } from 'lucide-react';
 
 const StatusUpdater = () => {
@@ -12,7 +13,7 @@ const StatusUpdater = () => {
     useEffect(() => {
         const fetchMyStatus = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/availability');
+                const res = await fetchApi(`${API_BASE_URL}/availability`);
                 if (res.ok) {
                     const data = await res.json();
                     const me = data.find(m => m.Username === user.username);
@@ -38,7 +39,7 @@ const StatusUpdater = () => {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const res = await fetch('http://localhost:5000/api/availability', {
+            const res = await fetchApi(`${API_BASE_URL}/availability`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

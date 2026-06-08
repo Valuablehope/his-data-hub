@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X, CalendarClock, Save, Check } from 'lucide-react';
+import { API_BASE_URL, fetchApi } from '../config';
 
 const DAYS = [
     { id: 1, name: 'Monday' },
@@ -46,7 +47,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
 
     const fetchSchedule = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/availability/schedule', {
+            const res = await fetchApi(`${API_BASE_URL}/availability/schedule`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -75,7 +76,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:5000/api/availability/schedule', {
+            const res = await fetchApi(`${API_BASE_URL}/availability/schedule`, {
                 method: 'PUT',
                 headers: { 
                     'Content-Type': 'application/json',

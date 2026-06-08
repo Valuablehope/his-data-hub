@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL, fetchApi } from '../config';
 import { Users, Plus, Edit2, Trash2, Key, X, Check } from 'lucide-react';
 
 const UserManagement = () => {
@@ -24,7 +25,7 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/users', {
+            const res = await fetchApi(`${API_BASE_URL}/users`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) throw new Error('Failed to fetch users');
@@ -75,14 +76,14 @@ const UserManagement = () => {
         setError('');
         try {
             const url = editingUser 
-                ? `http://localhost:5000/api/users/${editingUser.Id}`
-                : 'http://localhost:5000/api/users';
+                ? `${API_BASE_URL}/users/${editingUser.Id}`
+                : '${API_BASE_URL}/users';
             const method = editingUser ? 'PUT' : 'POST';
             const body = editingUser 
                 ? { username, role, isActive }
                 : { username, password, role };
 
-            const res = await fetch(url, {
+            const res = await fetchApi(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ const UserManagement = () => {
         e.preventDefault();
         setError('');
         try {
-            const res = await fetch(`http://localhost:5000/api/users/${passwordUserId}/password`, {
+            const res = await fetchApi(`${API_BASE_URL}/users/${passwordUserId}/password`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const UserManagement = () => {
     const handleDeleteUser = async (id) => {
         if (!window.confirm('Are you sure you want to delete this user? This will also remove their availability records.')) return;
         try {
-            const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+            const res = await fetchApi(`${API_BASE_URL}/users/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

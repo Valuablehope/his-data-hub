@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, MapPin, Clock, Briefcase, Coffee, PhoneCall, Check } from 'lucide-react';
+import { API_BASE_URL, fetchApi } from '../config';
 
 const AvailabilityBoard = () => {
     const [team, setTeam] = useState([]);
@@ -7,7 +8,7 @@ const AvailabilityBoard = () => {
 
     const fetchAvailability = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/availability');
+            const res = await fetchApi(`${API_BASE_URL}/availability`);
             if (res.ok) {
                 const data = await res.json();
                 setTeam(data);

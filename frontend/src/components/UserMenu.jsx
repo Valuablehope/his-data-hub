@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL, fetchApi } from '../config';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, UserCircle, Shield, ChevronDown, Check, Calendar } from 'lucide-react';
 import ScheduleAvailabilityModal from './ScheduleAvailabilityModal';
@@ -29,7 +30,7 @@ const UserMenu = () => {
     useEffect(() => {
         const fetchMyStatus = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/availability');
+                const res = await fetchApi(`${API_BASE_URL}/availability`);
                 if (res.ok) {
                     const data = await res.json();
                     const me = data.find(m => m.Username === user.username);
@@ -54,7 +55,7 @@ const UserMenu = () => {
         setStatus(newStatus);
         setNotes(newNotes);
         try {
-            const res = await fetch('http://localhost:5000/api/availability', {
+            const res = await fetchApi(`${API_BASE_URL}/availability`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
