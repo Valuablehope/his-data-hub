@@ -2,9 +2,10 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:50
 
 export const fetchApi = (url, options = {}) => {
   const headers = {
+    'Accept': 'application/json',
     ...options.headers,
     'Bypass-Tunnel-Reminder': 'true',
-    'ngrok-skip-browser-warning': 'true'
+    'ngrok-skip-browser-warning': 'true',
   };
   return fetch(url, { ...options, headers });
 };
