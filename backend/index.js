@@ -12,7 +12,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Explicitly respond to all preflight requests
+app.options(/.*/, cors(corsOptions)); // Explicitly respond to all preflight requests
 app.use(express.json());
 
 const docsRouter = require('./routes/docs');
