@@ -22,7 +22,8 @@ const flowsRouter      = require('./routes/flows');
 const filesRouter      = require('./routes/files');
 const facilitiesRouter = require('./routes/facilities');
 const availabilityRouter = require('./routes/availability');
-const usersRouter      = require('./routes/users');
+const usersRouter         = require('./routes/users');
+const projectLinksRouter  = require('./routes/project-links');
 
 app.use('/api/dashboard',  dashboardRouter);
 app.use('/api/docs',       docsRouter);
@@ -32,7 +33,8 @@ app.use('/api/flows',      flowsRouter);
 app.use('/api/files',      filesRouter);
 app.use('/api/facilities', facilitiesRouter);
 app.use('/api/availability', availabilityRouter);
-app.use('/api/users',      usersRouter);
+app.use('/api/users',         usersRouter);
+app.use('/api/project-links', projectLinksRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

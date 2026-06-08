@@ -9,6 +9,7 @@ import {
   ClipboardCheck,
   FolderOpen,
   Building2,
+  BookMarked,
   Search,
   UserCircle,
   LogOut,
@@ -55,6 +56,10 @@ const FloatingNav = () => {
           <NavLink to="/facilities" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Building2 size={16} />
             <span>Facilities</span>
+          </NavLink>
+          <NavLink to="/project-links" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+            <BookMarked size={16} />
+            <span>Project Links</span>
           </NavLink>
 
           <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>

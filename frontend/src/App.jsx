@@ -14,6 +14,7 @@ import Facilities from './pages/Facilities';
 import FacilityDetail from './pages/FacilityDetail';
 import FacilityForm from './pages/FacilityForm';
 import UserManagement from './pages/UserManagement';
+import ProjectLinks from './pages/ProjectLinks';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               <Route path="/facilities/edit/:id" element={<FacilityForm />} />
               <Route path="/facilities/:id" element={<FacilityDetail />} />
               <Route path="/users" element={<UserManagement />} />
+              <Route path="/project-links" element={<ProjectLinks />} />
             </Routes>
           </main>
         </div>
