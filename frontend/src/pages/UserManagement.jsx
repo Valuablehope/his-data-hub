@@ -31,8 +31,10 @@ const UserManagement = () => {
             if (!res.ok) {
                 let errorMsg = 'Failed to fetch users';
                 try {
-                    const errorData = await res.json();
+                    const text = await res.text();
+                    const errorData = JSON.parse(text);
                     if (errorData.error) errorMsg = errorData.error;
+                    else if (text) errorMsg = text;
                 } catch (e) {}
                 throw new Error(errorMsg);
             }
@@ -102,11 +104,11 @@ const UserManagement = () => {
             if (!res.ok) {
                 let errorMsg = 'Failed to save user';
                 try {
-                    const data = await res.json();
-                    if (data.error) errorMsg = data.error;
-                } catch (e) {
-                    errorMsg = await res.text();
-                }
+                    const text = await res.text();
+                    const errorData = JSON.parse(text);
+                    if (errorData.error) errorMsg = errorData.error;
+                    else if (text) errorMsg = text;
+                } catch (e) {}
                 throw new Error(errorMsg);
             }
 
@@ -133,11 +135,11 @@ const UserManagement = () => {
             if (!res.ok) {
                 let errorMsg = 'Failed to reset password';
                 try {
-                    const data = await res.json();
-                    if (data.error) errorMsg = data.error;
-                } catch (e) {
-                    errorMsg = await res.text();
-                }
+                    const text = await res.text();
+                    const errorData = JSON.parse(text);
+                    if (errorData.error) errorMsg = errorData.error;
+                    else if (text) errorMsg = text;
+                } catch (e) {}
                 throw new Error(errorMsg);
             }
 
