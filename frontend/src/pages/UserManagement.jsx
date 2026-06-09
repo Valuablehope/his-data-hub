@@ -77,7 +77,7 @@ const UserManagement = () => {
         try {
             const url = editingUser 
                 ? `${API_BASE_URL}/users/${editingUser.Id}`
-                : '${API_BASE_URL}/users';
+                : `${API_BASE_URL}/users`;
             const method = editingUser ? 'PUT' : 'POST';
             const body = editingUser 
                 ? { username, role, isActive }
