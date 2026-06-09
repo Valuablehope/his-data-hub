@@ -12,7 +12,10 @@ const authenticateAdmin = (req, res, next) => {
     if (token == null) return res.sendStatus(401);
 
     jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me', (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) {
+            console.error('JWT Verification Error:', err);
+            return res.status(403).json({ error: 'Forbidden: ' + err.message });
+        }
         if (user.role !== 'admin') return res.status(403).json({ error: 'Requires admin privileges' });
         req.user = user;
         next();

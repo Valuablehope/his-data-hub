@@ -28,7 +28,14 @@ const UserManagement = () => {
             const res = await fetchApi(`${API_BASE_URL}/users`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            if (!res.ok) throw new Error('Failed to fetch users');
+            if (!res.ok) {
+                let errorMsg = 'Failed to fetch users';
+                try {
+                    const errorData = await res.json();
+                    if (errorData.error) errorMsg = errorData.error;
+                } catch (e) {}
+                throw new Error(errorMsg);
+            }
             const data = await res.json();
             setUsersList(data);
         } catch (err) {
@@ -92,8 +99,16 @@ const UserManagement = () => {
                 body: JSON.stringify(body)
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to save user');
+            if (!res.ok) {
+                let errorMsg = 'Failed to save user';
+                try {
+                    const data = await res.json();
+                    if (data.error) errorMsg = data.error;
+                } catch (e) {
+                    errorMsg = await res.text();
+                }
+                throw new Error(errorMsg);
+            }
 
             setIsModalOpen(false);
             fetchUsers();
@@ -114,8 +129,17 @@ const UserManagement = () => {
                 },
                 body: JSON.stringify({ password: newPassword })
             });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to reset password');
+
+            if (!res.ok) {
+                let errorMsg = 'Failed to reset password';
+                try {
+                    const data = await res.json();
+                    if (data.error) errorMsg = data.error;
+                } catch (e) {
+                    errorMsg = await res.text();
+                }
+                throw new Error(errorMsg);
+            }
 
             setIsPasswordModalOpen(false);
         } catch (err) {
