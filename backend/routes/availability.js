@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
             SELECT 
                 u.Id, 
                 u.Username, 
+                u.DisplayName,
                 CASE 
                     WHEN w.Id IS NULL THEN a.Status -- No schedule defined yet
                     WHEN w.IsAvailable = 1 AND CAST(GETDATE() AS TIME) BETWEEN w.StartTime AND w.EndTime THEN a.Status

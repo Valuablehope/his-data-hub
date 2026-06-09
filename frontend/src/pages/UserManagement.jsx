@@ -14,6 +14,7 @@ const UserManagement = () => {
     
     // Form fields
     const [username, setUsername] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('viewer');
     const [isActive, setIsActive] = useState(true);
@@ -56,6 +57,7 @@ const UserManagement = () => {
     const openAddModal = () => {
         setEditingUser(null);
         setUsername('');
+        setDisplayName('');
         setPassword('');
         setRole('viewer');
         setIsActive(true);
@@ -66,6 +68,7 @@ const UserManagement = () => {
     const openEditModal = (u) => {
         setEditingUser(u);
         setUsername(u.Username);
+        setDisplayName(u.DisplayName || '');
         setPassword(''); // Not editing password here
         setRole(u.Role);
         setIsActive(u.IsActive);
@@ -89,8 +92,8 @@ const UserManagement = () => {
                 : `${API_BASE_URL}/users`;
             const method = editingUser ? 'PUT' : 'POST';
             const body = editingUser 
-                ? { username, role, isActive }
-                : { username, password, role };
+                ? { username, displayName, role, isActive }
+                : { username, displayName, password, role };
 
             const res = await fetchApi(url, {
                 method,
@@ -193,6 +196,7 @@ const UserManagement = () => {
                     <thead>
                         <tr>
                             <th style={{ paddingLeft: '1.5rem' }}>Username</th>
+                            <th>Display Name</th>
                             <th>Role</th>
                             <th>Status</th>
                             <th>Created At</th>
@@ -205,6 +209,7 @@ const UserManagement = () => {
                         ) : usersList.map(u => (
                             <tr key={u.Id}>
                                 <td className="primary-cell" style={{ paddingLeft: '1.5rem' }}>{u.Username}</td>
+                                <td>{u.DisplayName || u.Username}</td>
                                 <td>
                                     <span style={{ 
                                         padding: '0.25rem 0.5rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '600',
@@ -250,6 +255,11 @@ const UserManagement = () => {
                             <div className="form-group">
                                 <label>Username</label>
                                 <input type="text" className="form-control" required value={username} onChange={e => setUsername(e.target.value)} />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Display Name</label>
+                                <input type="text" className="form-control" placeholder="Leave blank to use username" value={displayName} onChange={e => setDisplayName(e.target.value)} />
                             </div>
 
                             {!editingUser && (

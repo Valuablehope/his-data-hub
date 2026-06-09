@@ -27,7 +27,7 @@ router.get('/', authenticateAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
-            SELECT Id, Username, Role, IsActive, LastLogin, CreatedAt 
+            SELECT Id, Username, DisplayName, Role, IsActive, LastLogin, CreatedAt 
             FROM Users 
             ORDER BY CreatedAt DESC
         `);
@@ -40,11 +40,14 @@ router.get('/', authenticateAdmin, async (req, res) => {
 
 // POST create new user
 router.post('/', authenticateAdmin, async (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password, role, displayName } = req.body;
     
     if (!username || !password || !role) {
         return res.status(400).json({ error: 'Username, password, and role are required' });
     }
+
+    // Default displayName to username if not provided
+    const finalDisplayName = displayName || username;
 
     try {
         const pool = await poolPromise;
@@ -69,10 +72,11 @@ router.post('/', authenticateAdmin, async (req, res) => {
                 .input('Username', sql.VarChar, username)
                 .input('PasswordHash', sql.VarChar, passwordHash)
                 .input('Role', sql.VarChar, role)
+                .input('DisplayName', sql.VarChar, finalDisplayName)
                 .query(`
-                    INSERT INTO Users (Username, PasswordHash, Role) 
+                    INSERT INTO Users (Username, PasswordHash, Role, DisplayName) 
                     OUTPUT INSERTED.Id 
-                    VALUES (@Username, @PasswordHash, @Role)
+                    VALUES (@Username, @PasswordHash, @Role, @DisplayName)
                 `);
             
             const userId = insertUserResult.recordset[0].Id;
@@ -88,7 +92,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
             
             res.status(201).json({ 
                 message: 'User created successfully', 
-                user: { Id: userId, Username: username, Role: role } 
+                user: { Id: userId, Username: username, DisplayName: finalDisplayName, Role: role } 
             });
         } catch (txnErr) {
             await transaction.rollback();
@@ -104,11 +108,13 @@ router.post('/', authenticateAdmin, async (req, res) => {
 // PUT update user (role, username, isActive)
 router.put('/:id', authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const { username, role, isActive } = req.body;
+    const { username, role, isActive, displayName } = req.body;
 
     if (!username || !role) {
         return res.status(400).json({ error: 'Username and role are required' });
     }
+
+    const finalDisplayName = displayName || username;
 
     try {
         const pool = await poolPromise;
@@ -128,9 +134,10 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
             .input('Username', sql.VarChar, username)
             .input('Role', sql.VarChar, role)
             .input('IsActive', sql.Bit, isActive)
+            .input('DisplayName', sql.VarChar, finalDisplayName)
             .query(`
                 UPDATE Users 
-                SET Username = @Username, Role = @Role, IsActive = @IsActive 
+                SET Username = @Username, Role = @Role, IsActive = @IsActive, DisplayName = @DisplayName
                 WHERE Id = @Id
             `);
             

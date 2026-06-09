@@ -129,7 +129,7 @@ const AvailabilityBoard = () => {
                                 color: 'var(--slate-700)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: '1.25rem', fontWeight: 'bold', border: '1px solid rgba(0,0,0,0.05)'
                             }}>
-                                {member.Username ? member.Username.charAt(0).toUpperCase() : 'U'}
+                                {(member.DisplayName || member.Username || 'U').charAt(0).toUpperCase()}
                             </div>
                             <div style={{
                                 position: 'absolute', bottom: '-2px', right: '-2px', width: '16px', height: '16px',
@@ -147,7 +147,7 @@ const AvailabilityBoard = () => {
                                     fontWeight: '600', fontSize: '1rem', color: 'var(--slate-800)', 
                                     letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' 
                                 }}>
-                                    {member.Username.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    {member.DisplayName || member.Username.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                 </div>
                                 <div style={{
                                     display: 'flex', alignItems: 'center', gap: '0.375rem',
