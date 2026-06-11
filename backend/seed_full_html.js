@@ -21,6 +21,12 @@ const fullHtml = `
   <a class="nav-item" href="#s6"><span class="nav-num">06</span>Hospital Activation</a>
   <a class="nav-item" href="#s7"><span class="nav-num">07</span>Delivery &amp; Discharge</a>
 
+  <div class="sidebar-part">Part 2 — Hospitalization</div>
+  <a class="nav-item" href="#s8"><span class="nav-num">08</span>Emergency Room (ER)</a>
+  <a class="nav-item" href="#s9"><span class="nav-num">09</span>Medical Inpatient</a>
+  <a class="nav-item" href="#s10"><span class="nav-num">10</span>NICU</a>
+  <a class="nav-item" href="#s11"><span class="nav-num">11</span>Surgeries</a>
+
   <div class="sidebar-footer">
     National Health Information System<br>
     Ministry of Public Health · Lebanon<br>
@@ -466,6 +472,314 @@ const fullHtml = `
       </div>
 
       <p class="prose">Once the referral and patient profile are activated, the hospital records all delivery-related clinical data in PHENICS. The hospital is required to upload a <strong>discharge report</strong> upon completion of the delivery episode.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- PART 2 HEADER -->
+    <div class="part-header">
+      <div class="part-number">2</div>
+      <div class="part-header-text">
+        <div class="part-label">Part Two</div>
+        <div class="part-title">Other Hospitalization Services</div>
+        <div class="part-desc">PUI coverage rules, eligibility requirements, and HFO file-checking procedures for ER, Medical Inpatient, NICU, and Surgeries</div>
+      </div>
+    </div>
+
+    <!-- ── S8: Emergency Room ── -->
+    <section class="section" id="s8">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">08</div></div>
+        <div>
+          <div class="section-title">Emergency Room (ER)</div>
+          <div class="section-sub">Walk-in — no referral — no second guarantor — fully PUI funded</div>
+        </div>
+      </div>
+
+      <p class="prose">ER services are provided once a patient is declared eligible through a <strong>prioritization assessment</strong> filled by the hospital ER focal point. The score is auto-calculated by PHENICS — a positive score confirms eligibility, after which acts can be recorded. ER is the only hospitalization service that does not require a PHCC referral; walk-in patients can receive ER services directly at the hospital.</p>
+
+      <div class="role-grid">
+        <div class="role-card role-teal">
+          <h5>No Referral Required</h5>
+          <ul>
+            <li>Walk-in patients are accepted</li>
+            <li>No PHCC referral needed</li>
+            <li>Unique to the ER service</li>
+          </ul>
+        </div>
+        <div class="role-card role-purple">
+          <h5>No Second Guarantor</h5>
+          <ul>
+            <li>ER is fully paid by PUI</li>
+            <li>NSSF / MOPH / UNHCR not required</li>
+            <li>Ceiling: $150 per patient</li>
+          </ul>
+        </div>
+        <div class="role-card role-slate">
+          <h5>ER-Specific Constraints</h5>
+          <ul>
+            <li>ER sheet is mandatory to fill</li>
+            <li>Labs and imaging must be uploaded</li>
+            <li>No bed should be recorded</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="infobox amber">
+        <div class="infobox-icon">⚠</div>
+        <div>
+          <div class="infobox-title">Ceiling — $150 per patient, not per visit</div>
+          <div class="infobox-body">The ER ceiling is <strong>$150 per patient</strong>. This limit applies across all ER episodes for that patient — it is not reset per visit. No second guarantor is required; PUI fully covers ER services within this ceiling.</div>
+        </div>
+      </div>
+
+      <div class="infobox blue">
+        <div class="infobox-icon">ℹ</div>
+        <div>
+          <div class="infobox-title">Eligibility — prioritization assessment</div>
+          <div class="infobox-body">The prioritization assessment is filled by the <strong>hospital ER focal point</strong>. The score is auto-calculated by PHENICS. Only once the score is positive can acts be recorded against the ER episode. The ER sheet in the medical file is exclusive to ER patients and is mandatory — labs and imaging results (LIDTs) must be uploaded as attachments.</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-600);margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--teal-600);">What to check</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check item</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Prioritization Assessment score</td><td>Must be positive (filled by ER focal point, auto-calculated)</td></tr>
+            <tr><td>Right service names</td><td>الاشعة في المستشفى · المختبر في المستشفى · طوارئ طبية في المستشفى</td></tr>
+            <tr><td>Valid ICD-10 codes</td><td>All diagnoses must carry a valid ICD-10 classification</td></tr>
+            <tr><td>Acts priced at zero</td><td>Communicate with the HIS Team for correction</td></tr>
+            <tr><td>Ceiling not exceeded</td><td>$150 per patient — not per visit</td></tr>
+            <tr><td>File completeness — ER Sheet</td><td>ER sheet must be filled; labs and imaging results uploaded as attachments (LIDTs)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ── S9: Medical Inpatient ── -->
+    <section class="section" id="s9">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">09</div></div>
+        <div>
+          <div class="section-title">Medical Inpatient</div>
+          <div class="section-sub">Pre-approval required — PHCC referral — second guarantor — tier pricing</div>
+        </div>
+      </div>
+
+      <p class="prose">All Medical Inpatient services require <strong>pre-approval from a PUI Medical Specialist</strong> and a valid referral from a PHCC. The patient must have a valid Socio-Economic Vulnerability assessment (SEV) with a positive score completed at the PHCC within the last 3 months. A second guarantor must be in place — PUI covers the difference between the guarantor's coverage and the total cost, up to the ceiling.</p>
+
+      <div class="infobox amber">
+        <div class="infobox-icon">⚠</div>
+        <div>
+          <div class="infobox-title">Ceiling — $500 per patient</div>
+          <div class="infobox-body">The default ceiling for Medical Inpatient services is <strong>$500 per patient</strong>. Exceeding this ceiling requires explicit <strong>special approval from the Health Coordinator</strong>.</div>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card role-teal">
+          <h5>Second Guarantor (NSSF / MOPH / UNHCR)</h5>
+          <ul>
+            <li>Guarantor covers their scheme share</li>
+            <li>Nationality must match eligibility</li>
+            <li>Syrian nationals cannot use MOPH</li>
+            <li>UNHCR applies to specific cases only</li>
+          </ul>
+        </div>
+        <div class="role-card role-purple">
+          <h5>NAN — Non-Supported Patients</h5>
+          <ul>
+            <li>80% coverage for patients with no active second guarantor</li>
+            <li>PUI covers the remaining difference</li>
+          </ul>
+        </div>
+        <div class="role-card role-slate">
+          <h5>Hospital Tier Pricing (T1 / T2 / T3)</h5>
+          <ul>
+            <li>Each act is priced per the hospital tier</li>
+            <li>T1, T2, T3 apply different rates per act</li>
+            <li>Tier applies across all inpatient acts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="infobox green">
+        <div class="infobox-icon">✓</div>
+        <div>
+          <div class="infobox-title">SEV requirement</div>
+          <div class="infobox-body">A valid <strong>Socio-Economic Vulnerability (SEV) assessment</strong> is mandatory. It must be completed at the PHCC level, carry a positive score, and be no older than <strong>3 months</strong> at the time of the hospital admission.</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-600);margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--teal-600);">What to check</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check item</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Valid referral</td><td>Patient must be referred from a PHCC</td></tr>
+            <tr><td>Valid second guarantor</td><td>Approval uploaded to the patient's file in PHENICS</td></tr>
+            <tr><td>Nationality compatibility</td><td>Nationality must match the guarantor scheme — Syrian nationals cannot be covered under MOPH</td></tr>
+            <tr><td>Right service names</td><td>الاشعة في المستشفى · المختبر في المستشفى · استشفاء</td></tr>
+            <tr><td>Valid ICD-10 codes</td><td>All diagnoses must carry a valid ICD-10 classification</td></tr>
+            <tr><td>Acts priced at zero</td><td>Communicate with the HIS Team for correction</td></tr>
+            <tr><td>Medical Specialist approval</td><td>Pre-approval from PUI Medical Specialist mandatory before services are rendered</td></tr>
+            <tr><td>Ceiling not exceeded</td><td>$500 default; special approval from Health Coordinator required if exceeded</td></tr>
+            <tr><td>File completeness</td><td>SEV valid (≤ 3 months, positive score), referral uploaded, guarantor documentation present</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ── S10: NICU ── -->
+    <section class="section" id="s10">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">10</div></div>
+        <div>
+          <div class="section-title">NICU — Neonatal Intensive Care</div>
+          <div class="section-sub">Pre-approval required — $1,500 ceiling — monitor newborn age</div>
+        </div>
+      </div>
+
+      <p class="prose">NICU services follow the same structure as Medical Inpatient — pre-approval from a PUI Medical Specialist, PHCC referral, valid SEV, and a second guarantor — but with a higher ceiling of <strong>$1,500</strong>. The coverage model is identical: PUI covers the difference between the guarantor's coverage (or NAN at 80%) and the total cost, at the applicable hospital tier rate. Special attention must be paid to the <strong>age of the newborn</strong> when reviewing NICU admissions.</p>
+
+      <div class="infobox amber">
+        <div class="infobox-icon">⚠</div>
+        <div>
+          <div class="infobox-title">Ceiling — $1,500 per patient</div>
+          <div class="infobox-body">The NICU ceiling is <strong>$1,500 per patient</strong>. Exceeding this ceiling requires explicit <strong>special approval from the Health Coordinator</strong>.</div>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card role-teal">
+          <h5>Second Guarantor (NSSF / MOPH / UNHCR)</h5>
+          <ul>
+            <li>Guarantor covers their scheme share</li>
+            <li>Nationality must match eligibility</li>
+            <li>Syrian nationals cannot use MOPH</li>
+          </ul>
+        </div>
+        <div class="role-card role-purple">
+          <h5>NAN — Non-Supported Patients</h5>
+          <ul>
+            <li>80% coverage for patients with no active second guarantor</li>
+            <li>PUI covers the remaining difference</li>
+          </ul>
+        </div>
+        <div class="role-card role-slate">
+          <h5>Hospital Tier Pricing (T1 / T2 / T3)</h5>
+          <ul>
+            <li>Acts priced per hospital tier</li>
+            <li>Rates differ across T1, T2, T3</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="infobox blue">
+        <div class="infobox-icon">ℹ</div>
+        <div>
+          <div class="infobox-title">Newborn age monitoring</div>
+          <div class="infobox-body">For NICU admissions, keep an eye on the <strong>age of the newborn</strong> during file review. This is a data quality check specific to NICU services — the recorded newborn age must be consistent with the admission context and clinical documentation.</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-600);margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--teal-600);">What to check</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check item</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Valid referral</td><td>Patient must be referred from a PHCC</td></tr>
+            <tr><td>Valid second guarantor</td><td>Approval uploaded to the patient's file in PHENICS</td></tr>
+            <tr><td>Nationality compatibility</td><td>Nationality must match the guarantor scheme — Syrian nationals cannot be covered under MOPH</td></tr>
+            <tr><td>Right service names</td><td>المختبر في المستشفى - NICU · الاشعة في المستشفى - NICU · العناية الفائقة لحديثي الولادة</td></tr>
+            <tr><td>Newborn age</td><td>Monitor and verify the newborn's age is consistent with the admission context</td></tr>
+            <tr><td>Valid ICD-10 codes</td><td>All diagnoses must carry a valid ICD-10 classification</td></tr>
+            <tr><td>Acts priced at zero</td><td>Communicate with the HIS Team for correction</td></tr>
+            <tr><td>Medical Specialist approval</td><td>Pre-approval from PUI Medical Specialist mandatory</td></tr>
+            <tr><td>Ceiling not exceeded</td><td>$1,500 default; special approval from Health Coordinator required if exceeded</td></tr>
+            <tr><td>File completeness</td><td>SEV valid (≤ 3 months, positive score), referral uploaded, guarantor documentation present</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ── S11: Surgeries ── -->
+    <section class="section" id="s11">
+      <div class="section-header">
+        <div class="section-badge"><div class="section-num">11</div></div>
+        <div>
+          <div class="section-title">Surgeries</div>
+          <div class="section-sub">Pre-approval required — PHCC referral — second guarantor — tier pricing</div>
+        </div>
+      </div>
+
+      <p class="prose">All surgical services require <strong>pre-approval from a PUI Medical Specialist</strong> and a valid PHCC referral. The patient must have a valid SEV on file. The coverage model is the same as Medical Inpatient — PUI covers the difference between the second guarantor's coverage (or NAN at 80% for non-supported patients) and the total cost, priced at the applicable hospital tier rate, up to the $500 ceiling.</p>
+
+      <div class="infobox amber">
+        <div class="infobox-icon">⚠</div>
+        <div>
+          <div class="infobox-title">Ceiling — $500 per patient</div>
+          <div class="infobox-body">The default ceiling for surgical services is <strong>$500 per patient</strong>. Exceeding this ceiling requires explicit <strong>special approval from the Health Coordinator</strong>.</div>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card role-teal">
+          <h5>Second Guarantor (NSSF / MOPH / UNHCR)</h5>
+          <ul>
+            <li>Guarantor covers their scheme share</li>
+            <li>Nationality must match eligibility</li>
+            <li>Syrian nationals cannot use MOPH</li>
+          </ul>
+        </div>
+        <div class="role-card role-purple">
+          <h5>NAN — Non-Supported Patients</h5>
+          <ul>
+            <li>80% coverage for patients with no active second guarantor</li>
+            <li>PUI covers the remaining difference</li>
+          </ul>
+        </div>
+        <div class="role-card role-slate">
+          <h5>Hospital Tier Pricing (T1 / T2 / T3)</h5>
+          <ul>
+            <li>Each surgical act is priced per hospital tier</li>
+            <li>Rates differ across T1, T2, T3</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="infobox green">
+        <div class="infobox-icon">✓</div>
+        <div>
+          <div class="infobox-title">SEV requirement</div>
+          <div class="infobox-body">A valid <strong>Socio-Economic Vulnerability (SEV) assessment</strong> is mandatory — completed at the PHCC level, with a positive score, and no older than <strong>3 months</strong>.</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--slate-600);margin:32px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--teal-600);">What to check</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check item</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Valid referral</td><td>Patient must be referred from a PHCC</td></tr>
+            <tr><td>Valid second guarantor</td><td>Approval uploaded to the patient's file in PHENICS</td></tr>
+            <tr><td>Nationality compatibility</td><td>Nationality must match the guarantor scheme — Syrian nationals cannot be covered under MOPH</td></tr>
+            <tr><td>Right service name</td><td>إجراءات طبية في المستشفى</td></tr>
+            <tr><td>Valid ICD-10 codes</td><td>All diagnoses must carry a valid ICD-10 classification</td></tr>
+            <tr><td>Acts priced at zero</td><td>Communicate with the HIS Team for correction</td></tr>
+            <tr><td>Medical Specialist approval</td><td>Pre-approval from PUI Medical Specialist mandatory before surgery</td></tr>
+            <tr><td>Ceiling not exceeded</td><td>$500 default; special approval from Health Coordinator required if exceeded</td></tr>
+            <tr><td>File completeness</td><td>SEV valid (≤ 3 months, positive score), referral uploaded, guarantor documentation present</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
   </div>
