@@ -6,29 +6,69 @@ router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
 
-        const [docsRes, flowsRes, formsRes, filesRes, pendingRes, activityRes] = await Promise.all([
+        const [
+            docsRes, filesRes,
+            facilitiesRes, teamRes,
+            linksRes, flowCountRes, latestFlowsRes
+        ] = await Promise.all([
             pool.request().query('SELECT COUNT(*) AS cnt FROM Documents WHERE IsPublished = 1'),
-            pool.request().query('SELECT COUNT(*) AS cnt FROM DataFlows WHERE IsActive = 1'),
-            pool.request().query('SELECT COUNT(*) AS cnt FROM ActivityForms'),
             pool.request().query('SELECT COUNT(*) AS cnt FROM UploadedFiles'),
-            pool.request().query("SELECT COUNT(*) AS cnt FROM ActivityForms WHERE Status = 'Pending'"),
+
             pool.request().query(`
-                SELECT TOP 8
-                    Id, Title, Priority, Status, SubmittedBy, TixoReferenceCode, SubmittedAt
-                FROM ActivityForms
-                ORDER BY SubmittedAt DESC
+                SELECT
+                    COUNT(*) AS total,
+                    SUM(CASE WHEN Status = 'Active' THEN 1 ELSE 0 END) AS active
+                FROM Facilities WHERE IsActive = 1
+            `),
+
+            pool.request().query(`
+                SELECT
+                    COUNT(u.Id) AS total,
+                    SUM(CASE WHEN a.Status = 'Online' THEN 1 ELSE 0 END) AS online
+                FROM Users u
+                LEFT JOIN Availabilities a ON a.UserId = u.Id
+                WHERE u.IsActive = 1
+            `),
+
+            pool.request().query('SELECT COUNT(*) AS cnt FROM ProjectLinks WHERE IsActive = 1'),
+
+            // Unique flow documents (one per version group)
+            pool.request().query(`
+                SELECT COUNT(DISTINCT ISNULL(FlowGroupId, Id)) AS cnt
+                FROM DataFlows WHERE IsActive = 1
+            `),
+
+            // Latest version per flow group, most recent 3
+            pool.request().query(`
+                SELECT TOP 3 Id, Title, Subtitle, SystemName, Program, Version, DocumentDate
+                FROM (
+                    SELECT *,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY ISNULL(FlowGroupId, Id)
+                            ORDER BY CreatedAt DESC
+                        ) AS rn
+                    FROM DataFlows WHERE IsActive = 1
+                ) t
+                WHERE rn = 1
+                ORDER BY CreatedAt DESC
             `)
         ]);
 
+        const fac = facilitiesRes.recordset[0];
+        const team = teamRes.recordset[0];
+
         res.json({
             stats: {
-                activeDocs:    docsRes.recordset[0].cnt,
-                activeFlows:   flowsRes.recordset[0].cnt,
-                totalForms:    formsRes.recordset[0].cnt,
-                uploadedFiles: filesRes.recordset[0].cnt,
-                pendingForms:  pendingRes.recordset[0].cnt,
+                activeDocs:      docsRes.recordset[0].cnt,
+                uploadedFiles:   filesRes.recordset[0].cnt,
+                activeFlows:     flowCountRes.recordset[0].cnt,
+            totalFacilities: fac.total,
+                activeFacilities: fac.active,
+                teamTotal:       team.total,
+                teamOnline:      team.online ?? 0,
+                projectLinks:    linksRes.recordset[0].cnt,
             },
-            recentActivity: activityRes.recordset
+            latestFlows: latestFlowsRes.recordset,
         });
     } catch (err) {
         console.error('Dashboard stats error:', err);

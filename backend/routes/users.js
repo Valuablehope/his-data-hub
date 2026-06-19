@@ -13,8 +13,8 @@ const authenticateAdmin = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me', (err, user) => {
         if (err) {
-            console.error('JWT Verification Error:', err);
-            return res.status(403).json({ error: 'Forbidden: ' + err.message });
+            console.error('JWT Verification Error:', err.message);
+            return res.status(401).json({ error: 'Session expired. Please log in again.' });
         }
         if (user.role !== 'admin') return res.status(403).json({ error: 'Requires admin privileges' });
         req.user = user;

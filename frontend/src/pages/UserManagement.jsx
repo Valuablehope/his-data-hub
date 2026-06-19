@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE_URL, fetchApi } from '../config';
 import { Users, Plus, Edit2, Trash2, Key, X, Check } from 'lucide-react';
 
 const UserManagement = () => {
-    const { token, user } = useContext(AuthContext);
+    const { token, user, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [usersList, setUsersList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -29,6 +31,11 @@ const UserManagement = () => {
             const res = await fetchApi(`${API_BASE_URL}/users`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            if (res.status === 401) {
+                logout();
+                navigate('/login');
+                return;
+            }
             if (!res.ok) {
                 let errorMsg = 'Failed to fetch users';
                 try {
@@ -205,7 +212,11 @@ const UserManagement = () => {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>Loading users...</td></tr>
+                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Loading users…</td></tr>
+                        ) : error ? (
+                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--primary-red)', fontSize: '0.875rem' }}>{error}</td></tr>
+                        ) : usersList.length === 0 ? (
+                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No users found.</td></tr>
                         ) : usersList.map(u => (
                             <tr key={u.Id}>
                                 <td className="primary-cell" style={{ paddingLeft: '1.5rem' }}>{u.Username}</td>

@@ -30,6 +30,174 @@ const FlowViewer = () => {
       });
   }, [id]);
 
+  // Inject a custom version picker dropdown into the hero's Version meta field.
+  // The panel is appended to document.body (position:fixed) to escape the
+  // hero's overflow:hidden, then positioned via getBoundingClientRect().
+  useEffect(() => {
+    if (loading || !flow) return;
+    const versions = flow.versions || [];
+    if (versions.length <= 1) return;
+
+    let panel = null;
+    let outsideHandler = null;
+    let scrollHandler = null;
+    let isOpen = false;
+    let closePanel = null;
+
+    const timeoutId = setTimeout(() => {
+      const metaItems = document.querySelectorAll('.flow-viewer-content .hero-meta-item');
+
+      metaItems.forEach(item => {
+        const lbl = item.querySelector('.hero-meta-label');
+        if (!lbl || lbl.textContent.trim() !== 'Version') return;
+
+        const valueEl = item.querySelector('.hero-meta-value');
+        if (!valueEl || valueEl.querySelector('.ver-trigger')) return;
+
+        const current = versions.find(v => v.Id === flow.Id) || versions[versions.length - 1];
+
+        // ── Trigger button ──────────────────────────────────────
+        const trigger = document.createElement('button');
+        trigger.className = 'ver-trigger';
+        trigger.style.cssText = `
+          display:inline-flex;align-items:center;gap:7px;
+          font-size:13px;font-weight:600;color:#fff;font-family:inherit;
+          background:rgba(255,255,255,0.09);
+          border:1px solid rgba(255,255,255,0.18);
+          border-radius:7px;padding:5px 10px 5px 12px;
+          cursor:pointer;outline:none;line-height:1;user-select:none;
+          transition:background 0.15s,border-color 0.15s;
+        `;
+
+        const triggerLabel = document.createElement('span');
+        triggerLabel.textContent = `v${current.Version}${current.DocumentDate ? ' · ' + current.DocumentDate : ''}`;
+
+        const chevronWrap = document.createElement('span');
+        chevronWrap.style.cssText = 'display:flex;align-items:center;opacity:0.55;transition:transform 0.2s ease;';
+        chevronWrap.innerHTML = `<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 4L5.5 7.5L9 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+        trigger.appendChild(triggerLabel);
+        trigger.appendChild(chevronWrap);
+
+        // ── Floating panel (appended to body) ───────────────────
+        panel = document.createElement('div');
+        panel.className = 'ver-picker-panel';
+        panel.style.cssText = `
+          display:none;position:fixed;z-index:9999;
+          min-width:210px;
+          background:rgba(8,26,32,0.97);
+          border:1px solid rgba(255,255,255,0.11);
+          border-radius:10px;
+          box-shadow:0 16px 48px rgba(0,0,0,0.55),0 2px 8px rgba(0,0,0,0.3);
+          overflow:hidden;
+          font-family:inherit;
+        `;
+
+        // Panel header
+        const header = document.createElement('div');
+        header.style.cssText = `
+          padding:9px 14px 8px;
+          font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+          color:rgba(255,255,255,0.28);
+          border-bottom:1px solid rgba(255,255,255,0.07);
+        `;
+        header.textContent = 'Switch Version';
+        panel.appendChild(header);
+
+        // Options
+        versions.forEach((v, i) => {
+          const isCurrent = v.Id === flow.Id;
+          const opt = document.createElement('button');
+          opt.style.cssText = `
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+            width:100%;text-align:left;
+            padding:11px 14px;
+            font-size:13px;font-weight:${isCurrent ? 600 : 500};
+            color:${isCurrent ? '#fff' : 'rgba(255,255,255,0.6)'};
+            background:${isCurrent ? 'rgba(255,255,255,0.07)' : 'transparent'};
+            border:none;border-top:${i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none'};
+            cursor:${isCurrent ? 'default' : 'pointer'};outline:none;font-family:inherit;
+            transition:background 0.12s,color 0.12s;
+          `;
+
+          const optLabel = document.createElement('span');
+          optLabel.textContent = `v${v.Version}${v.DocumentDate ? ' · ' + v.DocumentDate : ''}`;
+          opt.appendChild(optLabel);
+
+          if (isCurrent) {
+            const badge = document.createElement('span');
+            badge.textContent = 'Current';
+            badge.style.cssText = `
+              font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+              background:rgba(20,184,166,0.18);color:rgba(94,234,212,0.85);
+              border:1px solid rgba(94,234,212,0.18);border-radius:4px;
+              padding:2px 7px;flex-shrink:0;
+            `;
+            opt.appendChild(badge);
+          } else {
+            opt.addEventListener('mouseenter', () => {
+              opt.style.background = 'rgba(255,255,255,0.07)';
+              opt.style.color = '#fff';
+            });
+            opt.addEventListener('mouseleave', () => {
+              opt.style.background = 'transparent';
+              opt.style.color = 'rgba(255,255,255,0.6)';
+            });
+            opt.addEventListener('click', e => {
+              e.stopPropagation();
+              navigate(`/flows/view/${v.Id}`);
+            });
+          }
+
+          panel.appendChild(opt);
+        });
+
+        document.body.appendChild(panel);
+
+        // ── Open / close logic ──────────────────────────────────
+        const openPanel = () => {
+          isOpen = true;
+          const rect = trigger.getBoundingClientRect();
+          panel.style.top  = `${rect.bottom + 6}px`;
+          panel.style.left = `${rect.left}px`;
+          panel.style.display = 'block';
+          trigger.style.background   = 'rgba(255,255,255,0.15)';
+          trigger.style.borderColor  = 'rgba(255,255,255,0.28)';
+          chevronWrap.style.transform = 'rotate(180deg)';
+        };
+
+        closePanel = () => {
+          isOpen = false;
+          panel.style.display = 'none';
+          trigger.style.background  = 'rgba(255,255,255,0.09)';
+          trigger.style.borderColor = 'rgba(255,255,255,0.18)';
+          chevronWrap.style.transform = 'rotate(0deg)';
+        };
+
+        trigger.addEventListener('mouseenter', () => { if (!isOpen) trigger.style.background = 'rgba(255,255,255,0.13)'; });
+        trigger.addEventListener('mouseleave', () => { if (!isOpen) trigger.style.background = 'rgba(255,255,255,0.09)'; });
+        trigger.addEventListener('click', e => { e.stopPropagation(); isOpen ? closePanel() : openPanel(); });
+
+        valueEl.innerHTML = '';
+        valueEl.appendChild(trigger);
+      });
+
+      // Close on outside click or scroll
+      outsideHandler = () => { if (closePanel) closePanel(); };
+      scrollHandler  = () => { if (closePanel) closePanel(); };
+      document.addEventListener('click', outsideHandler);
+      window.addEventListener('scroll', scrollHandler, true);
+    }, 150);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (outsideHandler) document.removeEventListener('click', outsideHandler);
+      if (scrollHandler)  window.removeEventListener('scroll', scrollHandler, true);
+      // Remove the floating panel from body
+      document.querySelectorAll('.ver-picker-panel').forEach(p => p.remove());
+    };
+  }, [loading, flow, navigate]);
+
   // Scrollspy effect to highlight active section in sidebar
   useEffect(() => {
     if (loading || !flow) return;
@@ -231,9 +399,9 @@ const FlowViewer = () => {
       </div>
 
       {/* Inject raw HTML */}
-      <div 
+      <div
         className="flow-viewer-content"
-        dangerouslySetInnerHTML={{ __html: flow.HtmlContent }} 
+        dangerouslySetInnerHTML={{ __html: flow.HtmlContent }}
       />
     </div>
   );

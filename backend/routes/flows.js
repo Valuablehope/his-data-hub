@@ -2,11 +2,34 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 
-// Get all flows (metadata only for list view)
+// Get all flows — one card per version group (latest version wins)
 router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
-        const result = await pool.request().query('SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt FROM DataFlows WHERE IsActive = 1 ORDER BY CreatedAt DESC');
+        let result;
+        try {
+            // Show only the most recent version in each FlowGroupId bucket.
+            // ISNULL(FlowGroupId, Id) treats ungrouped flows as their own group.
+            result = await pool.request().query(`
+                SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt
+                FROM (
+                    SELECT *,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY ISNULL(FlowGroupId, Id)
+                            ORDER BY CreatedAt DESC
+                        ) AS rn
+                    FROM DataFlows
+                    WHERE IsActive = 1
+                ) t
+                WHERE rn = 1
+                ORDER BY CreatedAt DESC
+            `);
+        } catch (_) {
+            // FlowGroupId column not yet added — fall back to simple query
+            result = await pool.request().query(
+                'SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt FROM DataFlows WHERE IsActive = 1 ORDER BY CreatedAt DESC'
+            );
+        }
         res.json(result.recordset);
     } catch (err) {
         console.error("DB Error:", err);
@@ -14,18 +37,35 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get single flow by ID
+// Get single flow by ID (includes sibling versions if FlowGroupId is set)
 router.get('/:id', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
             .input('Id', req.params.id)
             .query('SELECT * FROM DataFlows WHERE Id = @Id AND IsActive = 1');
-        
+
         if (result.recordset.length === 0) {
             return res.status(404).json({ error: 'Flow not found' });
         }
-        res.json(result.recordset[0]);
+
+        const flow = result.recordset[0];
+        let versions = [];
+
+        // flow.FlowGroupId will be undefined if column doesn't exist yet (pre-migration)
+        if (flow.FlowGroupId != null) {
+            const vResult = await pool.request()
+                .input('GroupId', flow.FlowGroupId)
+                .query(`
+                    SELECT Id, Title, Version, DocumentDate
+                    FROM DataFlows
+                    WHERE FlowGroupId = @GroupId AND IsActive = 1
+                    ORDER BY CreatedAt ASC
+                `);
+            versions = vResult.recordset;
+        }
+
+        res.json({ ...flow, versions });
     } catch (err) {
         console.error("DB Error:", err);
         res.status(500).json({ error: 'Failed to fetch flow' });
