@@ -20,6 +20,7 @@ const UserManagement = () => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('viewer');
     const [isActive, setIsActive] = useState(true);
+    const [showOnDashboard, setShowOnDashboard] = useState(true);
 
     // Password reset modal
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -68,6 +69,7 @@ const UserManagement = () => {
         setPassword('');
         setRole('viewer');
         setIsActive(true);
+        setShowOnDashboard(true);
         setError('');
         setIsModalOpen(true);
     };
@@ -79,6 +81,7 @@ const UserManagement = () => {
         setPassword(''); // Not editing password here
         setRole(u.Role);
         setIsActive(u.IsActive);
+        setShowOnDashboard(u.ShowOnDashboard !== false);
         setError('');
         setIsModalOpen(true);
     };
@@ -99,8 +102,8 @@ const UserManagement = () => {
                 : `${API_BASE_URL}/users`;
             const method = editingUser ? 'PUT' : 'POST';
             const body = editingUser 
-                ? { username, displayName, role, isActive }
-                : { username, displayName, password, role };
+                ? { username, displayName, role, isActive, showOnDashboard }
+                : { username, displayName, password, role, showOnDashboard };
 
             const res = await fetchApi(url, {
                 method,
@@ -205,6 +208,7 @@ const UserManagement = () => {
                             <th style={{ paddingLeft: '1.5rem' }}>Username</th>
                             <th>Display Name</th>
                             <th>Role</th>
+                            <th>On Dashboard</th>
                             <th>Status</th>
                             <th>Created At</th>
                             <th style={{ paddingRight: '1.5rem', textAlign: 'right' }}>Actions</th>
@@ -212,11 +216,11 @@ const UserManagement = () => {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Loading users…</td></tr>
+                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Loading users…</td></tr>
                         ) : error ? (
-                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--primary-red)', fontSize: '0.875rem' }}>{error}</td></tr>
+                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--primary-red)', fontSize: '0.875rem' }}>{error}</td></tr>
                         ) : usersList.length === 0 ? (
-                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No users found.</td></tr>
+                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No users found.</td></tr>
                         ) : usersList.map(u => (
                             <tr key={u.Id}>
                                 <td className="primary-cell" style={{ paddingLeft: '1.5rem' }}>{u.Username}</td>
@@ -228,6 +232,15 @@ const UserManagement = () => {
                                         color: u.Role === 'admin' ? 'var(--red-600)' : 'var(--teal-700)'
                                     }}>
                                         {u.Role}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style={{ 
+                                        padding: '0.25rem 0.5rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '600',
+                                        background: u.ShowOnDashboard !== false ? 'rgba(34, 197, 94, 0.1)' : 'rgba(148, 163, 184, 0.1)',
+                                        color: u.ShowOnDashboard !== false ? 'var(--green-600)' : 'var(--slate-500)'
+                                    }}>
+                                        {u.ShowOnDashboard !== false ? 'Visible' : 'Hidden'}
                                     </span>
                                 </td>
                                 <td>
@@ -295,6 +308,11 @@ const UserManagement = () => {
                                     <label htmlFor="isActive" style={{ margin: 0 }}>Active User</label>
                                 </div>
                             )}
+
+                            <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                                <input type="checkbox" id="showOnDashboard" checked={showOnDashboard} onChange={e => setShowOnDashboard(e.target.checked)} />
+                                <label htmlFor="showOnDashboard" style={{ margin: 0 }}>Show on Dashboard</label>
+                            </div>
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-ghost">Cancel</button>

@@ -10,6 +10,8 @@ import Forms from './pages/Forms';
 import Files from './pages/Files';
 import FlowViewer from './pages/FlowViewer';
 import FlowBuilder from './pages/FlowBuilder';
+import DocumentViewer from './pages/DocumentViewer';
+import DocumentForm from './pages/DocumentForm';
 import Facilities from './pages/Facilities';
 import FacilityDetail from './pages/FacilityDetail';
 import FacilityForm from './pages/FacilityForm';
@@ -32,6 +34,10 @@ function App() {
               <Route path="/flows/add" element={<FlowBuilder />} />
               <Route path="/flows/edit/:id" element={<FlowBuilder />} />
               <Route path="/docs" element={<Documentation />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/documentation/add" element={<DocumentForm />} />
+              <Route path="/documentation/edit/:id" element={<DocumentForm />} />
+              <Route path="/documentation/:id" element={<DocumentViewer />} />
               <Route path="/forms" element={<Forms />} />
               <Route path="/files" element={<Files />} />
               <Route path="/facilities" element={<Facilities />} />

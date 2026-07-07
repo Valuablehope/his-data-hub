@@ -13,17 +13,17 @@ router.get('/', async (req, res) => {
                 u.Username, 
                 u.DisplayName,
                 CASE 
-                    WHEN w.Id IS NULL THEN a.Status -- No schedule defined yet
-                    WHEN w.IsAvailable = 1 AND CAST(GETDATE() AS TIME) BETWEEN w.StartTime AND w.EndTime THEN a.Status
+                    WHEN w.Id IS NULL THEN ISNULL(a.Status, 'Offline') -- No schedule defined yet
+                    WHEN w.IsAvailable = 1 AND CAST(GETDATE() AS TIME) BETWEEN w.StartTime AND w.EndTime THEN ISNULL(a.Status, 'Offline')
                     ELSE 'Offline'
                 END AS Status,
                 a.Notes,
-                a.UpdatedAt
+                ISNULL(a.UpdatedAt, GETDATE()) AS UpdatedAt
             FROM Users u
-            JOIN Availabilities a ON u.Id = a.UserId
+            LEFT JOIN Availabilities a ON u.Id = a.UserId
             LEFT JOIN WeeklySchedules w 
                 ON w.UserId = u.Id AND w.DayOfWeek = (DATEDIFF(day, '18991231', GETDATE()) % 7)
-            WHERE u.Role = 'HIS_TEAM'
+            WHERE u.ShowOnDashboard = 1 AND u.IsActive = 1
         `);
         res.json(result.recordset);
     } catch (err) {
@@ -39,7 +39,7 @@ const authenticateToken = (req, res, next) => {
     
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) return res.sendStatus(403);
         req.user = user;
         next();

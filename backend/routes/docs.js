@@ -1,12 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const { poolPromise } = require('../db');
+const jwt = require('jsonwebtoken');
+const { poolPromise, sql } = require('../db');
+
+const authenticateAdmin = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            console.error('JWT Verification Error:', err.message);
+            return res.status(401).json({ error: 'Session expired. Please log in again.' });
+        }
+        if (user.role !== 'admin') return res.status(403).json({ error: 'Requires admin privileges' });
+        req.user = user;
+        next();
+    });
+};
 
 // Get all documents (metadata only)
 router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
-        const result = await pool.request().query('SELECT Id, Title, Category, UpdatedAt FROM Documents ORDER BY UpdatedAt DESC');
+        const result = await pool.request().query('SELECT TOP 500 Id, Title, Category, UpdatedAt FROM Documents ORDER BY UpdatedAt DESC');
         res.json(result.recordset);
     } catch (err) {
         console.error("DB Error, returning mock data:", err);
@@ -59,6 +77,71 @@ INSERT INTO Documents (Title, Category, Content) VALUES ('Test SOP', 'SOP', '# W
 * **Responsive**: Reads well on any device.
 `;
         res.json({ content: mockContent });
+    }
+});
+
+// Create a new document
+router.post('/', authenticateAdmin, async (req, res) => {
+    const { title, category, content } = req.body;
+    if (!title || !category || !content) {
+        return res.status(400).json({ error: 'Title, Category, and Content are required' });
+    }
+    
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input('Title', sql.VarChar, title)
+            .input('Category', sql.VarChar, category)
+            .input('Content', sql.Text, content)
+            .query(`
+                INSERT INTO Documents (Title, Category, Content, IsPublished, CreatedBy)
+                OUTPUT INSERTED.Id
+                VALUES (@Title, @Category, @Content, 1, 'admin')
+            `);
+        res.status(201).json({ message: 'Document created successfully', id: result.recordset[0].Id });
+    } catch (err) {
+        console.error('Error creating document:', err);
+        res.status(500).json({ error: 'Failed to create document' });
+    }
+});
+
+// Update an existing document
+router.put('/:id', authenticateAdmin, async (req, res) => {
+    const { title, category, content } = req.body;
+    if (!title || !category || !content) {
+        return res.status(400).json({ error: 'Title, Category, and Content are required' });
+    }
+
+    try {
+        const pool = await poolPromise;
+        await pool.request()
+            .input('Id', sql.Int, req.params.id)
+            .input('Title', sql.VarChar, title)
+            .input('Category', sql.VarChar, category)
+            .input('Content', sql.Text, content)
+            .query(`
+                UPDATE Documents 
+                SET Title = @Title, Category = @Category, Content = @Content, UpdatedAt = GETDATE()
+                WHERE Id = @Id
+            `);
+        res.json({ message: 'Document updated successfully' });
+    } catch (err) {
+        console.error('Error updating document:', err);
+        res.status(500).json({ error: 'Failed to update document' });
+    }
+});
+
+// Delete a document
+router.delete('/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        await pool.request()
+            .input('Id', sql.Int, req.params.id)
+            .query('DELETE FROM Documents WHERE Id = @Id');
+        res.json({ message: 'Document deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting document:', err);
+        res.status(500).json({ error: 'Failed to delete document' });
     }
 });
 

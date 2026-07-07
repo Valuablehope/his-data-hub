@@ -38,7 +38,6 @@ const FloatingNav = () => {
           <NavLink to="/documentation" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <FileText size={16} />
             <span>SOPs</span>
-            <span className="nav-soon-badge">Soon</span>
           </NavLink>
           <NavLink to="/flows" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Network size={16} />

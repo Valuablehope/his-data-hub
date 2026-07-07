@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
+const sanitizeHtml = require('sanitize-html');
 
 // Get all flows — one card per version group (latest version wins)
 router.get('/', async (req, res) => {
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
             // Show only the most recent version in each FlowGroupId bucket.
             // ISNULL(FlowGroupId, Id) treats ungrouped flows as their own group.
             result = await pool.request().query(`
-                SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt
+                SELECT TOP 500 Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt
                 FROM (
                     SELECT *,
                         ROW_NUMBER() OVER (
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
         } catch (_) {
             // FlowGroupId column not yet added — fall back to simple query
             result = await pool.request().query(
-                'SELECT Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt FROM DataFlows WHERE IsActive = 1 ORDER BY CreatedAt DESC'
+                'SELECT TOP 500 Id, Title, Subtitle, SystemName, Program, Version, DocumentDate, CreatedAt FROM DataFlows WHERE IsActive = 1 ORDER BY CreatedAt DESC'
             );
         }
         res.json(result.recordset);
@@ -81,6 +82,15 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Title and HTML content are required' });
         }
 
+        const cleanHtml = sanitizeHtml(htmlContent, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3']),
+            allowedAttributes: {
+                '*': ['style', 'class'],
+                'a': ['href', 'name', 'target'],
+                'img': ['src', 'alt', 'width', 'height']
+            }
+        });
+
         const pool = await poolPromise;
         const result = await pool.request()
             .input('Title', title)
@@ -89,7 +99,7 @@ router.post('/', async (req, res) => {
             .input('Program', program || '')
             .input('Version', version || '')
             .input('DocumentDate', documentDate || '')
-            .input('HtmlContent', htmlContent)
+            .input('HtmlContent', cleanHtml)
             .input('BuilderState', builderState ? JSON.stringify(builderState) : null)
             .query(`
                 INSERT INTO DataFlows (Title, Subtitle, SystemName, Program, Version, DocumentDate, HtmlContent, BuilderState)
@@ -113,6 +123,15 @@ router.put('/:id', async (req, res) => {
             return res.status(400).json({ error: 'Title and HTML content are required' });
         }
 
+        const cleanHtml = sanitizeHtml(htmlContent, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3']),
+            allowedAttributes: {
+                '*': ['style', 'class'],
+                'a': ['href', 'name', 'target'],
+                'img': ['src', 'alt', 'width', 'height']
+            }
+        });
+
         const pool = await poolPromise;
         
         const check = await pool.request().input('Id', req.params.id).query('SELECT Id FROM DataFlows WHERE Id = @Id');
@@ -128,7 +147,7 @@ router.put('/:id', async (req, res) => {
             .input('Program', program || '')
             .input('Version', version || '')
             .input('DocumentDate', documentDate || '')
-            .input('HtmlContent', htmlContent)
+            .input('HtmlContent', cleanHtml)
             .input('BuilderState', builderState ? JSON.stringify(builderState) : null)
             .query(`
                 UPDATE DataFlows 
@@ -151,25 +170,10 @@ const { createTixoTicket } = require('../services/tixoService');
 // Trigger a sync for a flow
 router.post('/:id/sync', async (req, res) => {
     const flowId = req.params.id;
-    // Simulate a sync failure
-    try {
-        throw new Error(`Data Sync Failure on Flow ${flowId}`);
-    } catch (error) {
-        console.error("Sync failed:", error.message);
-        try {
-            const ticket = await createTixoTicket({
-                title: `Data Sync Failure on Flow ${flowId}`,
-                description: `The HIS data hub failed to synchronize records for flow ${flowId} at ${new Date().toLocaleTimeString()}. Error: ${error.message}`,
-                category_id: 1,
-                priority: 'High',
-                source_channel: 'HIS Data Hub'
-            });
-            res.status(500).json({ error: "Sync failed. A support ticket has been created automatically.", ticket });
-        } catch (ticketError) {
-            console.error("Failed to create TIXO ticket:", ticketError);
-            res.status(500).json({ error: "Sync failed and unable to create support ticket." });
-        }
-    }
+    // For MVP, return a generic success status
+    setTimeout(() => {
+        res.json({ message: `Flow ${flowId} synchronized successfully.` });
+    }, 1500); // Simulate network delay
 });
 
 module.exports = router;

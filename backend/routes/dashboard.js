@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
                     SUM(CASE WHEN a.Status = 'Online' THEN 1 ELSE 0 END) AS online
                 FROM Users u
                 LEFT JOIN Availabilities a ON a.UserId = u.Id
-                WHERE u.IsActive = 1
+                WHERE u.IsActive = 1 AND u.ShowOnDashboard = 1
             `),
 
             pool.request().query('SELECT COUNT(*) AS cnt FROM ProjectLinks WHERE IsActive = 1'),

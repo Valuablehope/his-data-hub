@@ -146,7 +146,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
                                     background: day.isAvailable ? '#fff' : 'rgba(0,0,0,0.02)'
                                 }}>
                                     {/* Toggle */}
-                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', width: '110px', gap: '0.5rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', width: '140px', gap: '0.5rem', flexShrink: 0 }}>
                                         <input 
                                             type="checkbox" 
                                             checked={day.isAvailable}
@@ -154,7 +154,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
                                             style={{
                                                 appearance: 'none', width: '36px', height: '20px', borderRadius: '100px',
                                                 background: day.isAvailable ? 'var(--green-500)' : 'var(--slate-300)',
-                                                position: 'relative', outline: 'none', transition: '0.3s', cursor: 'pointer'
+                                                position: 'relative', outline: 'none', transition: '0.3s', cursor: 'pointer', flexShrink: 0
                                             }}
                                             className="toggle-checkbox"
                                         />

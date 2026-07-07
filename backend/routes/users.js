@@ -11,7 +11,7 @@ const authenticateAdmin = (req, res, next) => {
     
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_change_me', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
             console.error('JWT Verification Error:', err.message);
             return res.status(401).json({ error: 'Session expired. Please log in again.' });
@@ -27,7 +27,7 @@ router.get('/', authenticateAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
-            SELECT Id, Username, DisplayName, Role, IsActive, LastLogin, CreatedAt 
+            SELECT TOP 500 Id, Username, DisplayName, Role, IsActive, ShowOnDashboard, LastLogin, CreatedAt 
             FROM Users 
             ORDER BY CreatedAt DESC
         `);
@@ -40,7 +40,7 @@ router.get('/', authenticateAdmin, async (req, res) => {
 
 // POST create new user
 router.post('/', authenticateAdmin, async (req, res) => {
-    const { username, password, role, displayName } = req.body;
+    const { username, password, role, displayName, showOnDashboard } = req.body;
     
     if (!username || !password || !role) {
         return res.status(400).json({ error: 'Username, password, and role are required' });
@@ -73,10 +73,11 @@ router.post('/', authenticateAdmin, async (req, res) => {
                 .input('PasswordHash', sql.VarChar, passwordHash)
                 .input('Role', sql.VarChar, role)
                 .input('DisplayName', sql.VarChar, finalDisplayName)
+                .input('ShowOnDashboard', sql.Bit, showOnDashboard !== false) // default to true
                 .query(`
-                    INSERT INTO Users (Username, PasswordHash, Role, DisplayName) 
+                    INSERT INTO Users (Username, PasswordHash, Role, DisplayName, ShowOnDashboard) 
                     OUTPUT INSERTED.Id 
-                    VALUES (@Username, @PasswordHash, @Role, @DisplayName)
+                    VALUES (@Username, @PasswordHash, @Role, @DisplayName, @ShowOnDashboard)
                 `);
             
             const userId = insertUserResult.recordset[0].Id;
@@ -108,7 +109,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
 // PUT update user (role, username, isActive)
 router.put('/:id', authenticateAdmin, async (req, res) => {
     const { id } = req.params;
-    const { username, role, isActive, displayName } = req.body;
+    const { username, role, isActive, displayName, showOnDashboard } = req.body;
 
     if (!username || !role) {
         return res.status(400).json({ error: 'Username and role are required' });
@@ -135,9 +136,10 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
             .input('Role', sql.VarChar, role)
             .input('IsActive', sql.Bit, isActive)
             .input('DisplayName', sql.VarChar, finalDisplayName)
+            .input('ShowOnDashboard', sql.Bit, showOnDashboard !== false)
             .query(`
                 UPDATE Users 
-                SET Username = @Username, Role = @Role, IsActive = @IsActive, DisplayName = @DisplayName
+                SET Username = @Username, Role = @Role, IsActive = @IsActive, DisplayName = @DisplayName, ShowOnDashboard = @ShowOnDashboard
                 WHERE Id = @Id
             `);
             

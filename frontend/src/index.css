@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg-color: #F4F4F6;
-  --surface-color: #FFFFFF;
-  --surface-hover: #ECECEF;
-  --border-color: #E4E4E7;
+  --bg-color: #F8FAFC;
+  --surface-color: rgba(255, 255, 255, 0.6);
+  --surface-hover: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(0, 0, 0, 0.06);
 
-  --text-primary: #111111;
-  --text-secondary: #52525B;
-  --text-muted: #A1A1AA;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 
   --primary-red: #E3000F;
-  --primary-red-glow: rgba(227, 0, 15, 0.10);
+  --primary-red-glow: rgba(227, 0, 15, 0.15);
 
   --green-500: #22c55e;
   --green-600: #16a34a;
@@ -58,9 +58,11 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  background-image:
-    radial-gradient(circle at 15% 50%, rgba(227, 0, 15, 0.04), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(227, 0, 15, 0.03), transparent 25%);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(227, 0, 15, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.05), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.04), transparent 50%);
+  background-attachment: fixed;
 }
 
 ::-webkit-scrollbar {
@@ -419,3 +421,49 @@ body {
   background-color: var(--surface-color);
   box-shadow: 0 0 0 4px var(--primary-red-glow);
 }
+
+/* Premium Dashboard UI Utilities */
+.glass-panel {
+  background: var(--surface-color);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #64748b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-red {
+  background: linear-gradient(135deg, #E3000F 0%, #ff4d5a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }

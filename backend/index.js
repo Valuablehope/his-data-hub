@@ -5,6 +5,11 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+if (!process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
+    process.exit(1);
+}
+
 const corsOptions = {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
