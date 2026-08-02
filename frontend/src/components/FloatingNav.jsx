@@ -62,7 +62,7 @@ const FloatingNav = () => {
           </NavLink>
 
           <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
-          <a href="https://tixo.cubiq-solutions.com/" target="_blank" rel="noopener noreferrer" className="nav-item">
+          <a href="https://tixo.his-pui.org/" target="_blank" rel="noopener noreferrer" className="nav-item">
             <img src={`${import.meta.env.BASE_URL}favicon_TIXO.svg`} alt="TIXO" width="16" height="16" style={{ flexShrink: 0 }} />
             <span>TIXO Tickets</span>
           </a>

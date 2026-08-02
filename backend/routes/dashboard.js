@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
+const { RESOLVED_STATUS_SQL, AVAILABILITY_JOIN_SQL } = require('../utils/availabilityStatus');
 
 router.get('/', async (req, res) => {
     try {
@@ -23,11 +24,14 @@ router.get('/', async (req, res) => {
 
             pool.request().query(`
                 SELECT
-                    COUNT(u.Id) AS total,
-                    SUM(CASE WHEN a.Status = 'Online' THEN 1 ELSE 0 END) AS online
-                FROM Users u
-                LEFT JOIN Availabilities a ON a.UserId = u.Id
-                WHERE u.IsActive = 1 AND u.ShowOnDashboard = 1
+                    COUNT(*) AS total,
+                    SUM(CASE WHEN ResolvedStatus = 'Online' THEN 1 ELSE 0 END) AS online
+                FROM (
+                    SELECT ${RESOLVED_STATUS_SQL} AS ResolvedStatus
+                    FROM Users u
+                    ${AVAILABILITY_JOIN_SQL}
+                    WHERE u.IsActive = 1 AND u.ShowOnDashboard = 1
+                ) t
             `),
 
             pool.request().query('SELECT COUNT(*) AS cnt FROM ProjectLinks WHERE IsActive = 1'),

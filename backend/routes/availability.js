@@ -2,27 +2,22 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { poolPromise, sql } = require('../db');
+const { AVAILABILITY_STATUSES, RESOLVED_STATUS_SQL, AVAILABILITY_JOIN_SQL } = require('../utils/availabilityStatus');
 
 // Public route to get all HIS team member availabilities (incorporating weekly schedule overrides)
 router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
-            SELECT 
-                u.Id, 
-                u.Username, 
+            SELECT
+                u.Id,
+                u.Username,
                 u.DisplayName,
-                CASE 
-                    WHEN w.Id IS NULL THEN ISNULL(a.Status, 'Offline') -- No schedule defined yet
-                    WHEN w.IsAvailable = 1 AND CAST(GETDATE() AS TIME) BETWEEN w.StartTime AND w.EndTime THEN ISNULL(a.Status, 'Offline')
-                    ELSE 'Offline'
-                END AS Status,
+                ${RESOLVED_STATUS_SQL} AS Status,
                 a.Notes,
                 ISNULL(a.UpdatedAt, GETDATE()) AS UpdatedAt
             FROM Users u
-            LEFT JOIN Availabilities a ON u.Id = a.UserId
-            LEFT JOIN WeeklySchedules w 
-                ON w.UserId = u.Id AND w.DayOfWeek = (DATEDIFF(day, '18991231', GETDATE()) % 7)
+            ${AVAILABILITY_JOIN_SQL}
             WHERE u.ShowOnDashboard = 1 AND u.IsActive = 1
         `);
         res.json(result.recordset);
@@ -53,6 +48,9 @@ router.put('/', authenticateToken, async (req, res) => {
 
     if (!status) {
         return res.status(400).json({ error: 'Status is required' });
+    }
+    if (!AVAILABILITY_STATUSES.includes(status)) {
+        return res.status(400).json({ error: `Status must be one of: ${AVAILABILITY_STATUSES.join(', ')}` });
     }
 
     try {
