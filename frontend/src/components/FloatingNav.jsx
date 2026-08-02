@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import UserMenu from './UserMenu';
 import {
@@ -23,15 +23,15 @@ const FloatingNav = () => {
   return (
     <div className="floating-nav-wrapper">
       <div className="floating-nav">
-        <div className="nav-logo">
+        <Link to="/" className="nav-logo" style={{ textDecoration: 'none' }}>
            <div className="nav-logo-icon">
               <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Platform Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
            </div>
            <span className="nav-logo-text">HIS DATA HUB</span>
-        </div>
-        
+        </Link>
+
         <div className="nav-links">
-          <NavLink to="/" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+          <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
             <Activity size={16} />
             <span>Dashboard</span>
           </NavLink>

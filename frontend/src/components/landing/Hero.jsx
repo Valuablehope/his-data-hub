@@ -1,0 +1,67 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { LogIn, ChevronDown } from 'lucide-react';
+import NetworkDiagram from './NetworkDiagram';
+
+const Hero = ({ onExploreClick }) => {
+  return (
+    <section className="landing-hero" style={{ padding: '9rem 2rem 4rem', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: '#5eead4', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem',
+        }}>
+          Health Information System · Lebanon Mission
+        </div>
+
+        <h1 className="landing-hero-headline" style={{
+          fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, margin: 0, color: '#fff',
+        }}>
+          HIS Data Hub
+        </h1>
+
+        {/* DRAFT / PLACEHOLDER COPY — no public mission statement exists yet; replace with
+            reviewed copy before this page is shared outside the team. */}
+        <p style={{
+          fontSize: '1.125rem', color: '#cbd5e1', maxWidth: '640px', margin: '1.5rem auto 0',
+          lineHeight: 1.6, fontWeight: 400,
+        }}>
+          Connecting our Coordination Office with the Saida and Tripoli field bases — one system
+          for health information strategy, data management, and field-level technical support
+          across our health programme areas.
+        </p>
+
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2.25rem' }}>
+          <Link
+            to="/login"
+            className="btn btn-primary"
+            style={{ padding: '0.8rem 1.5rem', fontSize: '0.9375rem', textDecoration: 'none' }}
+          >
+            <LogIn size={16} />
+            HIS Login
+          </Link>
+          <button
+            onClick={onExploreClick}
+            className="btn"
+            style={{
+              padding: '0.8rem 1.5rem', fontSize: '0.9375rem', color: '#fff',
+              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+          >
+            Explore the Hub
+            <ChevronDown size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '820px', margin: '3.5rem auto 0', position: 'relative', zIndex: 1 }}>
+        <NetworkDiagram />
+      </div>
+    </section>
+  );
+};
+
+export default Hero;

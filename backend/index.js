@@ -23,6 +23,7 @@ app.use(express.json());
 const docsRouter = require('./routes/docs');
 const authRouter = require('./routes/auth');
 const dashboardRouter = require('./routes/dashboard');
+const landingRouter = require('./routes/landing');
 
 // Basic health check endpoint
 app.get('/api/health', (req, res) => {
@@ -38,6 +39,7 @@ const usersRouter         = require('./routes/users');
 const projectLinksRouter  = require('./routes/project-links');
 
 app.use('/api/dashboard',  dashboardRouter);
+app.use('/api/landing',   landingRouter);
 app.use('/api/docs',       docsRouter);
 app.use('/api/auth',       authRouter);
 app.use('/api/forms',      formsRouter);

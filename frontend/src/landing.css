@@ -1,0 +1,83 @@
+/* Landing page — only what inline styles can't express: keyframes, breakpoints, reduced-motion. */
+
+.landing-hero {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(227, 0, 15, 0.22), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(20, 184, 166, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(59, 130, 246, 0.16), transparent 55%),
+    #0a0f1a;
+}
+
+.network-diagram {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.flow-edge {
+  stroke: #14b8a6;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 6 10;
+  fill: none;
+  opacity: 0.55;
+  animation: flow-dash 1.6s linear infinite;
+}
+
+.flow-node-ring {
+  fill: none;
+  stroke: #14b8a6;
+  stroke-width: 1;
+  opacity: 0.45;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: node-pulse 2.6s ease-in-out infinite;
+}
+
+.flow-node-core {
+  fill: #14b8a6;
+  filter: drop-shadow(0 0 6px rgba(20, 184, 166, 0.8));
+}
+
+@keyframes flow-dash {
+  to { stroke-dashoffset: -32; }
+}
+
+@keyframes node-pulse {
+  0%, 100% { r: 20; opacity: 0.45; }
+  50% { r: 28; opacity: 0.1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-edge, .flow-node-ring {
+    animation: none;
+  }
+}
+
+.landing-hero-headline {
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+}
+
+.landing-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.landing-team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .landing-team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+}
