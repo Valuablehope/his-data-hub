@@ -37,6 +37,7 @@ const facilitiesRouter = require('./routes/facilities');
 const availabilityRouter = require('./routes/availability');
 const usersRouter         = require('./routes/users');
 const projectLinksRouter  = require('./routes/project-links');
+const platformLinksRouter = require('./routes/platform-links');
 
 app.use('/api/dashboard',  dashboardRouter);
 app.use('/api/landing',   landingRouter);
@@ -49,6 +50,7 @@ app.use('/api/facilities', facilitiesRouter);
 app.use('/api/availability', availabilityRouter);
 app.use('/api/users',         usersRouter);
 app.use('/api/project-links', projectLinksRouter);
+app.use('/api/platform-links', platformLinksRouter);
 
 const server = app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

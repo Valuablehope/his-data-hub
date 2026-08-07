@@ -8,6 +8,7 @@ import RecentActivity from '../components/landing/RecentActivity';
 import TeamStructure from '../components/landing/TeamStructure';
 import MeetTheTeam from '../components/landing/MeetTheTeam';
 import AppsGrid from '../components/landing/AppsGrid';
+import PlatformLinksGrid from '../components/landing/PlatformLinksGrid';
 import Footer from '../components/landing/Footer';
 
 function SectionHeading({ index, label, title }) {
@@ -85,8 +86,13 @@ const LandingPage = () => {
         <AppsGrid />
       </div>
 
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '6rem 2rem 0' }}>
+        <SectionHeading index="04" label="Connected Platforms" title="Where We Plug In" />
+        <PlatformLinksGrid links={data?.platformLinks} loading={loading} />
+      </div>
+
       <div style={{ marginTop: '6rem' }}>
-        <Footer />
+        <Footer platformLinks={data?.platformLinks} loading={loading} />
       </div>
     </div>
   );

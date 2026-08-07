@@ -1,12 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import PlatformLogo from './PlatformLogo';
 
-const Footer = () => {
+function PlatformBadge({ link }) {
+  const isInternal = link.url?.startsWith('/');
+  const content = (
+    <div
+      className="hub-panel"
+      title={link.name}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.875rem',
+        borderRadius: 'var(--radius-full)', textDecoration: 'none',
+      }}
+    >
+      <PlatformLogo link={link} />
+      <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+        {link.name}
+      </span>
+    </div>
+  );
+
+  return isInternal ? (
+    <Link to={link.url} style={{ textDecoration: 'none' }}>{content}</Link>
+  ) : (
+    <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{content}</a>
+  );
+}
+
+const Footer = ({ platformLinks, loading }) => {
   return (
     <footer style={{
       borderTop: '1px solid var(--border-color)', padding: '2.5rem 2rem',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem',
     }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -21,15 +46,13 @@ const Footer = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-        <a href="https://tixo.his-pui.org/" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>
-          TIXO Tickets
-        </a>
-        <Link to="/login" style={{ fontSize: '0.8rem', color: 'var(--teal-600)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <LogIn size={13} />
-          HIS Login
-        </Link>
-      </div>
+      {!loading && platformLinks?.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {platformLinks.map(link => (
+            <PlatformBadge key={link.id} link={link} />
+          ))}
+        </div>
+      )}
     </footer>
   );
 };

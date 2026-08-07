@@ -81,6 +81,28 @@ router.get('/', async (req, res) => {
             `),
         ]);
 
+        // Queried separately (not in the Promise.all above) so a database that hasn't
+        // had create_platform_links_table.js run yet still serves the rest of the
+        // landing page instead of 500ing the whole endpoint.
+        let platformLinks = [];
+        try {
+            const platformLinksRes = await pool.request().query(`
+                SELECT Id, Name, Url,
+                       CASE WHEN LogoFileName IS NOT NULL THEN 1 ELSE 0 END AS HasLogo
+                FROM PlatformLinks
+                WHERE IsActive = 1
+                ORDER BY SortOrder, Name
+            `);
+            platformLinks = platformLinksRes.recordset.map(p => ({
+                id: p.Id,
+                name: p.Name,
+                url: p.Url,
+                hasLogo: !!p.HasLogo,
+            }));
+        } catch (linkErr) {
+            console.error('PlatformLinks not available yet:', linkErr.message);
+        }
+
         const fac = facilitiesRes.recordset[0];
         const team = teamRes.recordset[0];
 
@@ -100,6 +122,7 @@ router.get('/', async (req, res) => {
             },
             programmes: programmesRes.recordset,
             recentActivity: activityRes.recordset,
+            platformLinks,
         });
     } catch (err) {
         console.error('Landing stats error:', err);

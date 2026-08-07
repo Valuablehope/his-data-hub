@@ -165,5 +165,31 @@ BEGIN
 END
 GO
 
+-- ============================================================
+-- 6. PlatformLinks
+--    Admin-managed list of external/internal system links shown
+--    as logo badges in the public landing page footer.
+-- ============================================================
+IF NOT EXISTS (
+    SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'PlatformLinks'
+)
+BEGIN
+    CREATE TABLE dbo.PlatformLinks (
+        Id            INT            IDENTITY(1,1) NOT NULL,
+        Name          NVARCHAR(100)  NOT NULL,
+        Url           NVARCHAR(500)  NOT NULL,          -- internal path (e.g. /login) or external URL
+        LogoFileName  NVARCHAR(255)  NULL,
+        SortOrder     INT            NOT NULL CONSTRAINT DF_PlatformLinks_SortOrder DEFAULT 0,
+        IsActive      BIT            NOT NULL CONSTRAINT DF_PlatformLinks_IsActive DEFAULT 1,
+        CreatedAt     DATETIME       NOT NULL CONSTRAINT DF_PlatformLinks_CreatedAt DEFAULT GETDATE(),
+        UpdatedAt     DATETIME       NOT NULL CONSTRAINT DF_PlatformLinks_UpdatedAt DEFAULT GETDATE(),
+
+        CONSTRAINT PK_PlatformLinks PRIMARY KEY CLUSTERED (Id)
+    );
+    PRINT 'Table dbo.PlatformLinks created.';
+END
+GO
+
 PRINT '=== HIS Data Hub schema applied successfully ===';
 GO

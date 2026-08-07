@@ -18,6 +18,7 @@ import Facilities from './pages/Facilities';
 import FacilityDetail from './pages/FacilityDetail';
 import FacilityForm from './pages/FacilityForm';
 import UserManagement from './pages/UserManagement';
+import PlatformLinks from './pages/PlatformLinks';
 import ProjectLinks from './pages/ProjectLinks';
 import NotFound from './pages/NotFound';
 
@@ -46,6 +47,7 @@ function App() {
 
             <Route element={<ProtectedRoute roles={['admin']} />}>
               <Route path="/users" element={<UserManagement />} />
+              <Route path="/settings/platform-links" element={<PlatformLinks />} />
               <Route path="/documentation/add" element={<DocumentForm />} />
               <Route path="/documentation/edit/:id" element={<DocumentForm />} />
             </Route>
