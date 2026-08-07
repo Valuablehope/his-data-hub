@@ -13,19 +13,11 @@ const AppsGrid = () => {
         return (
           <Link key={app.to} to={app.to} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
             <div
-              className="glass-panel"
+              className="hub-panel"
               style={{
+                '--hub-accent': app.color,
                 padding: '1.5rem', height: '100%', boxSizing: 'border-box',
                 display: 'flex', flexDirection: 'column', gap: '0.75rem',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = `0 12px 30px -10px ${app.color}66, 0 12px 32px rgba(0,0,0,0.08)`;
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.04)';
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

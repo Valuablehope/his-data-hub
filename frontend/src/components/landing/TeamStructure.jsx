@@ -40,7 +40,7 @@ const TeamStructure = () => {
         {BRANCHES.map(b => {
           const Icon = b.icon;
           return (
-            <div key={b.name} className="glass-panel" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div key={b.name} className="hub-panel" style={{ '--hub-accent': b.color, padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{
                   width: '42px', height: '42px', borderRadius: '12px',

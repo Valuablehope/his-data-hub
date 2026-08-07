@@ -7,6 +7,11 @@ const Hero = ({ onExploreClick }) => {
   return (
     <section className="landing-hero" style={{ padding: '9rem 2rem 4rem', color: '#fff', position: 'relative', overflow: 'hidden' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="hub-status-pill" style={{ marginBottom: '1.5rem' }}>
+          <span className="hub-status-dot" />
+          System Operational
+        </div>
+
         <div style={{
           fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
           color: '#5eead4', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem',
@@ -26,9 +31,8 @@ const Hero = ({ onExploreClick }) => {
           fontSize: '1.125rem', color: '#cbd5e1', maxWidth: '640px', margin: '1.5rem auto 0',
           lineHeight: 1.6, fontWeight: 400,
         }}>
-          Connecting our Coordination Office with the Saida and Tripoli field bases — one system
-          for health information strategy, data management, and field-level technical support
-          across our health programme areas.
+          One data layer connecting the Coordination Office with the Saida and Tripoli field bases —
+          SOPs, data flows, facilities, and files, kept in sync and routed to the people who need them.
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '2.25rem' }}>

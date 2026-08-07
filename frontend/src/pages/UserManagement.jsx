@@ -1,8 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE_URL, fetchApi } from '../config';
-import { Users, Plus, Edit2, Trash2, Key, X, Check } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, Key, X, Check, Camera } from 'lucide-react';
+
+function Avatar({ user: u, size = 32, photoNonce }) {
+    const initial = (u.DisplayName || u.Username || '?').charAt(0).toUpperCase();
+    if (u.PhotoFileName) {
+        return (
+            <img
+                src={`${API_BASE_URL}/users/${u.Id}/photo?v=${photoNonce}`}
+                alt={u.DisplayName || u.Username}
+                style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+            />
+        );
+    }
+    return (
+        <div style={{
+            width: size, height: size, borderRadius: '50%', flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--teal-500)', color: '#fff', fontWeight: 700,
+            fontSize: size * 0.42,
+        }}>
+            {initial}
+        </div>
+    );
+}
 
 const UserManagement = () => {
     const { token, user, logout } = useContext(AuthContext);
@@ -10,10 +33,13 @@ const UserManagement = () => {
     const [usersList, setUsersList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [photoNonce, setPhotoNonce] = useState(0);
+    const [photoUploading, setPhotoUploading] = useState(false);
+    const photoInputRef = useRef(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null); // null means adding new user
-    
+
     // Form fields
     const [username, setUsername] = useState('');
     const [displayName, setDisplayName] = useState('');
@@ -21,6 +47,8 @@ const UserManagement = () => {
     const [role, setRole] = useState('viewer');
     const [isActive, setIsActive] = useState(true);
     const [showOnDashboard, setShowOnDashboard] = useState(true);
+    const [publicTitle, setPublicTitle] = useState('');
+    const [showOnPublicTeam, setShowOnPublicTeam] = useState(false);
 
     // Password reset modal
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -68,6 +96,8 @@ const UserManagement = () => {
         setRole('viewer');
         setIsActive(true);
         setShowOnDashboard(true);
+        setPublicTitle('');
+        setShowOnPublicTeam(false);
         setError('');
         setIsModalOpen(true);
     };
@@ -80,8 +110,40 @@ const UserManagement = () => {
         setRole(u.Role);
         setIsActive(u.IsActive);
         setShowOnDashboard(u.ShowOnDashboard !== false);
+        setPublicTitle(u.PublicTitle || '');
+        setShowOnPublicTeam(!!u.ShowOnPublicTeam);
         setError('');
         setIsModalOpen(true);
+    };
+
+    const handlePhotoChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !editingUser) return;
+
+        setPhotoUploading(true);
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        try {
+            const res = await fetchApi(`${API_BASE_URL}/users/${editingUser.Id}/photo`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData,
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to upload photo');
+            }
+            const data = await res.json();
+            setEditingUser(prev => ({ ...prev, PhotoFileName: data.fileName }));
+            setPhotoNonce(Date.now());
+            fetchUsers();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setPhotoUploading(false);
+            if (photoInputRef.current) photoInputRef.current.value = '';
+        }
     };
 
     const openPasswordModal = (u) => {
@@ -99,9 +161,9 @@ const UserManagement = () => {
                 ? `${API_BASE_URL}/users/${editingUser.Id}`
                 : `${API_BASE_URL}/users`;
             const method = editingUser ? 'PUT' : 'POST';
-            const body = editingUser 
-                ? { username, displayName, role, isActive, showOnDashboard }
-                : { username, displayName, password, role, showOnDashboard };
+            const body = editingUser
+                ? { username, displayName, role, isActive, showOnDashboard, publicTitle, showOnPublicTeam }
+                : { username, displayName, password, role, showOnDashboard, publicTitle, showOnPublicTeam };
 
             const res = await fetchApi(url, {
                 method,
@@ -218,7 +280,12 @@ const UserManagement = () => {
                         ) : usersList.map(u => (
                             <tr key={u.Id}>
                                 <td className="primary-cell" style={{ paddingLeft: '1.5rem' }}>{u.Username}</td>
-                                <td>{u.DisplayName || u.Username}</td>
+                                <td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                                        <Avatar user={u} photoNonce={photoNonce} />
+                                        {u.DisplayName || u.Username}
+                                    </div>
+                                </td>
                                 <td>
                                     <span style={{ 
                                         padding: '0.25rem 0.5rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '600',
@@ -269,7 +336,31 @@ const UserManagement = () => {
                         <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>{editingUser ? 'Edit User' : 'Add New User'}</h3>
                         <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {error && <div style={{ color: 'var(--red-500)', fontSize: '0.875rem' }}>{error}</div>}
-                            
+
+                            {editingUser && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <Avatar user={editingUser} size={56} photoNonce={photoNonce} />
+                                    <div>
+                                        <input
+                                            type="file"
+                                            ref={photoInputRef}
+                                            accept="image/jpeg,image/png,image/webp"
+                                            style={{ display: 'none' }}
+                                            onChange={handlePhotoChange}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="btn btn-ghost"
+                                            onClick={() => photoInputRef.current?.click()}
+                                            disabled={photoUploading}
+                                            style={{ fontSize: '0.8125rem' }}
+                                        >
+                                            <Camera size={14} /> {photoUploading ? 'Uploading…' : 'Change Photo'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="form-group">
                                 <label>Username</label>
                                 <input type="text" className="form-control" required value={username} onChange={e => setUsername(e.target.value)} />
@@ -306,6 +397,18 @@ const UserManagement = () => {
                             <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
                                 <input type="checkbox" id="showOnDashboard" checked={showOnDashboard} onChange={e => setShowOnDashboard(e.target.checked)} />
                                 <label htmlFor="showOnDashboard" style={{ margin: 0 }}>Show on Dashboard</label>
+                            </div>
+
+                            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div className="form-group">
+                                    <label>Public Title <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(shown on the public "Meet the Team" section, not the same as Role)</span></label>
+                                    <input type="text" className="form-control" placeholder="e.g. Field Coordinator" value={publicTitle} onChange={e => setPublicTitle(e.target.value)} />
+                                </div>
+
+                                <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                                    <input type="checkbox" id="showOnPublicTeam" checked={showOnPublicTeam} onChange={e => setShowOnPublicTeam(e.target.checked)} />
+                                    <label htmlFor="showOnPublicTeam" style={{ margin: 0 }}>Show on public "Meet the Team" page</label>
+                                </div>
                             </div>
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>

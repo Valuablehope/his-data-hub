@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 
         const [
             facilitiesRes, flowCountRes, docsRes, teamRes,
-            programmesRes, activityRes,
+            programmesRes, activityRes, teamMembersRes,
         ] = await Promise.all([
             pool.request().query(`
                 SELECT
@@ -69,6 +69,16 @@ router.get('/', async (req, res) => {
                 ) combined
                 ORDER BY ActivityDate DESC
             `),
+
+            // Public "Meet the Team" roster — explicit opt-in only (ShowOnPublicTeam),
+            // never the internal auth Role, and never anyone who hasn't opted in.
+            pool.request().query(`
+                SELECT Id, DisplayName, PublicTitle,
+                       CASE WHEN PhotoFileName IS NOT NULL THEN 1 ELSE 0 END AS HasPhoto
+                FROM Users
+                WHERE IsActive = 1 AND ShowOnPublicTeam = 1
+                ORDER BY DisplayName
+            `),
         ]);
 
         const fac = facilitiesRes.recordset[0];
@@ -78,7 +88,16 @@ router.get('/', async (req, res) => {
             facilities: { total: fac.total, active: fac.active },
             flowManuals: flowCountRes.recordset[0].cnt,
             publishedDocs: docsRes.recordset[0].cnt,
-            team: { total: team.total, online: team.online ?? 0 },
+            team: {
+                total: team.total,
+                online: team.online ?? 0,
+                members: teamMembersRes.recordset.map(m => ({
+                    id: m.Id,
+                    displayName: m.DisplayName,
+                    title: m.PublicTitle,
+                    hasPhoto: !!m.HasPhoto,
+                })),
+            },
             programmes: programmesRes.recordset,
             recentActivity: activityRes.recordset,
         });

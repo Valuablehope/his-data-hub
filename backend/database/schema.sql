@@ -20,13 +20,21 @@ IF NOT EXISTS (
 )
 BEGIN
     CREATE TABLE dbo.Users (
-        Id           INT          IDENTITY(1,1) NOT NULL,
-        Username     VARCHAR(50)  NOT NULL,
-        PasswordHash VARCHAR(255) NOT NULL,          -- bcrypt hash
-        Role         VARCHAR(50)  NOT NULL CONSTRAINT DF_Users_Role DEFAULT 'viewer',
-        IsActive     BIT          NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT 1,
-        LastLogin    DATETIME     NULL,
-        CreatedAt    DATETIME     NOT NULL CONSTRAINT DF_Users_CreatedAt DEFAULT GETDATE(),
+        Id               INT           IDENTITY(1,1) NOT NULL,
+        Username         VARCHAR(50)   NOT NULL,
+        PasswordHash     VARCHAR(255)  NOT NULL,          -- bcrypt hash
+        Role             VARCHAR(50)   NOT NULL CONSTRAINT DF_Users_Role DEFAULT 'viewer',
+        DisplayName      VARCHAR(100)  NULL,
+        IsActive         BIT           NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT 1,
+        ShowOnDashboard  BIT           NOT NULL CONSTRAINT DF_Users_ShowOnDashboard DEFAULT 1,
+        -- Public-facing "Meet the Team" fields on the landing page (opt-in, admin-controlled).
+        -- PublicTitle is a free-text role label distinct from Role (the internal auth
+        -- permission level), so the public page never exposes who holds admin credentials.
+        PhotoFileName    NVARCHAR(255) NULL,
+        PublicTitle      NVARCHAR(100) NULL,
+        ShowOnPublicTeam BIT           NOT NULL CONSTRAINT DF_Users_ShowOnPublicTeam DEFAULT 0,
+        LastLogin        DATETIME      NULL,
+        CreatedAt        DATETIME      NOT NULL CONSTRAINT DF_Users_CreatedAt DEFAULT GETDATE(),
 
         CONSTRAINT PK_Users PRIMARY KEY CLUSTERED (Id),
         CONSTRAINT UQ_Users_Username UNIQUE (Username)
