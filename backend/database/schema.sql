@@ -33,6 +33,9 @@ BEGIN
         PhotoFileName    NVARCHAR(255) NULL,
         PublicTitle      NVARCHAR(100) NULL,
         ShowOnPublicTeam BIT           NOT NULL CONSTRAINT DF_Users_ShowOnPublicTeam DEFAULT 0,
+        -- Seniority tier for the public "Meet the Team" hierarchy display:
+        -- 1 = Leadership, 2 = Coordinator, 3 = Team Member (default).
+        TeamTier         INT           NOT NULL CONSTRAINT DF_Users_TeamTier DEFAULT 3,
         LastLogin        DATETIME      NULL,
         CreatedAt        DATETIME      NOT NULL CONSTRAINT DF_Users_CreatedAt DEFAULT GETDATE(),
 

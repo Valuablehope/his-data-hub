@@ -49,6 +49,7 @@ const UserManagement = () => {
     const [showOnDashboard, setShowOnDashboard] = useState(true);
     const [publicTitle, setPublicTitle] = useState('');
     const [showOnPublicTeam, setShowOnPublicTeam] = useState(false);
+    const [teamTier, setTeamTier] = useState(3);
 
     // Password reset modal
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -98,6 +99,7 @@ const UserManagement = () => {
         setShowOnDashboard(true);
         setPublicTitle('');
         setShowOnPublicTeam(false);
+        setTeamTier(3);
         setError('');
         setIsModalOpen(true);
     };
@@ -112,6 +114,7 @@ const UserManagement = () => {
         setShowOnDashboard(u.ShowOnDashboard !== false);
         setPublicTitle(u.PublicTitle || '');
         setShowOnPublicTeam(!!u.ShowOnPublicTeam);
+        setTeamTier(u.TeamTier || 3);
         setError('');
         setIsModalOpen(true);
     };
@@ -162,8 +165,8 @@ const UserManagement = () => {
                 : `${API_BASE_URL}/users`;
             const method = editingUser ? 'PUT' : 'POST';
             const body = editingUser
-                ? { username, displayName, role, isActive, showOnDashboard, publicTitle, showOnPublicTeam }
-                : { username, displayName, password, role, showOnDashboard, publicTitle, showOnPublicTeam };
+                ? { username, displayName, role, isActive, showOnDashboard, publicTitle, showOnPublicTeam, teamTier: Number(teamTier) }
+                : { username, displayName, password, role, showOnDashboard, publicTitle, showOnPublicTeam, teamTier: Number(teamTier) };
 
             const res = await fetchApi(url, {
                 method,
@@ -331,8 +334,8 @@ const UserManagement = () => {
 
             {/* User Edit/Add Modal */}
             {isModalOpen && (
-                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                    <div style={{ background: '#fff', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px' }}>
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '2rem 1rem' }}>
+                    <div style={{ background: '#fff', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', maxHeight: '100%', overflowY: 'auto' }}>
                         <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>{editingUser ? 'Edit User' : 'Add New User'}</h3>
                         <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {error && <div style={{ color: 'var(--red-500)', fontSize: '0.875rem' }}>{error}</div>}
@@ -403,6 +406,15 @@ const UserManagement = () => {
                                 <div className="form-group">
                                     <label>Public Title <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(shown on the public "Meet the Team" section, not the same as Role)</span></label>
                                     <input type="text" className="form-control" placeholder="e.g. Field Coordinator" value={publicTitle} onChange={e => setPublicTitle(e.target.value)} />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Team Hierarchy <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(controls ordering/grouping on the public team page)</span></label>
+                                    <select className="form-control" value={teamTier} onChange={e => setTeamTier(e.target.value)}>
+                                        <option value={1}>Leadership</option>
+                                        <option value={2}>Coordinator</option>
+                                        <option value={3}>Team Member</option>
+                                    </select>
                                 </div>
 
                                 <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>

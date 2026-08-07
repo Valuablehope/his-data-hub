@@ -212,8 +212,13 @@
 
 .landing-team-people-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
+  /* auto-fit (not auto-fill) + a capped track width + centering: auto-fit
+     collapses unused tracks to 0 width so a row of one or two people actually
+     centers; auto-fill would keep reserving empty tracks and leave the real
+     card(s) stranded at the start instead. */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
+  justify-content: center;
+  gap: 1.5rem;
 }
 
 .landing-platforms-grid {

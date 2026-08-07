@@ -72,12 +72,18 @@ router.get('/', async (req, res) => {
 
             // Public "Meet the Team" roster — explicit opt-in only (ShowOnPublicTeam),
             // never the internal auth Role, and never anyone who hasn't opted in.
+            // Ordered by TeamTier first so the hierarchy (Leadership → Coordinator →
+            // Team Member) renders in order, alphabetical within each tier. Joins the
+            // same resolved-availability logic used internally (Dashboard/Availability
+            // Board) so opted-in members also show their live status publicly.
             pool.request().query(`
-                SELECT Id, DisplayName, PublicTitle,
-                       CASE WHEN PhotoFileName IS NOT NULL THEN 1 ELSE 0 END AS HasPhoto
-                FROM Users
-                WHERE IsActive = 1 AND ShowOnPublicTeam = 1
-                ORDER BY DisplayName
+                SELECT u.Id, u.DisplayName, u.PublicTitle, u.TeamTier,
+                       CASE WHEN u.PhotoFileName IS NOT NULL THEN 1 ELSE 0 END AS HasPhoto,
+                       ${RESOLVED_STATUS_SQL} AS Status
+                FROM Users u
+                ${AVAILABILITY_JOIN_SQL}
+                WHERE u.IsActive = 1 AND u.ShowOnPublicTeam = 1
+                ORDER BY u.TeamTier, u.DisplayName
             `),
         ]);
 
@@ -118,6 +124,8 @@ router.get('/', async (req, res) => {
                     displayName: m.DisplayName,
                     title: m.PublicTitle,
                     hasPhoto: !!m.HasPhoto,
+                    tier: m.TeamTier,
+                    status: m.Status,
                 })),
             },
             programmes: programmesRes.recordset,

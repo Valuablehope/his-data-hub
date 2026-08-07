@@ -36,7 +36,7 @@ router.get('/', requireAdmin, async (req, res) => {
         const pool = await poolPromise;
         const result = await pool.request().query(`
             SELECT TOP 500 Id, Username, DisplayName, Role, IsActive, ShowOnDashboard,
-                   PhotoFileName, PublicTitle, ShowOnPublicTeam, LastLogin, CreatedAt
+                   PhotoFileName, PublicTitle, ShowOnPublicTeam, TeamTier, LastLogin, CreatedAt
             FROM Users
             ORDER BY CreatedAt DESC
         `);
@@ -49,7 +49,7 @@ router.get('/', requireAdmin, async (req, res) => {
 
 // POST create new user
 router.post('/', requireAdmin, async (req, res) => {
-    const { username, password, role, displayName, showOnDashboard, publicTitle, showOnPublicTeam } = req.body;
+    const { username, password, role, displayName, showOnDashboard, publicTitle, showOnPublicTeam, teamTier } = req.body;
 
     if (!username || !password || !role) {
         return res.status(400).json({ error: 'Username, password, and role are required' });
@@ -85,10 +85,11 @@ router.post('/', requireAdmin, async (req, res) => {
                 .input('ShowOnDashboard', sql.Bit, showOnDashboard !== false) // default to true
                 .input('PublicTitle', sql.NVarChar, publicTitle || null)
                 .input('ShowOnPublicTeam', sql.Bit, !!showOnPublicTeam) // default to false
+                .input('TeamTier', sql.Int, teamTier || 3) // default to Team Member
                 .query(`
-                    INSERT INTO Users (Username, PasswordHash, Role, DisplayName, ShowOnDashboard, PublicTitle, ShowOnPublicTeam)
+                    INSERT INTO Users (Username, PasswordHash, Role, DisplayName, ShowOnDashboard, PublicTitle, ShowOnPublicTeam, TeamTier)
                     OUTPUT INSERTED.Id
-                    VALUES (@Username, @PasswordHash, @Role, @DisplayName, @ShowOnDashboard, @PublicTitle, @ShowOnPublicTeam)
+                    VALUES (@Username, @PasswordHash, @Role, @DisplayName, @ShowOnDashboard, @PublicTitle, @ShowOnPublicTeam, @TeamTier)
                 `);
             
             const userId = insertUserResult.recordset[0].Id;
@@ -120,7 +121,7 @@ router.post('/', requireAdmin, async (req, res) => {
 // PUT update user (role, username, isActive)
 router.put('/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
-    const { username, role, isActive, displayName, showOnDashboard, publicTitle, showOnPublicTeam } = req.body;
+    const { username, role, isActive, displayName, showOnDashboard, publicTitle, showOnPublicTeam, teamTier } = req.body;
 
     if (!username || !role) {
         return res.status(400).json({ error: 'Username and role are required' });
@@ -150,10 +151,12 @@ router.put('/:id', requireAdmin, async (req, res) => {
             .input('ShowOnDashboard', sql.Bit, showOnDashboard !== false)
             .input('PublicTitle', sql.NVarChar, publicTitle || null)
             .input('ShowOnPublicTeam', sql.Bit, !!showOnPublicTeam)
+            .input('TeamTier', sql.Int, teamTier || 3)
             .query(`
                 UPDATE Users
                 SET Username = @Username, Role = @Role, IsActive = @IsActive, DisplayName = @DisplayName,
-                    ShowOnDashboard = @ShowOnDashboard, PublicTitle = @PublicTitle, ShowOnPublicTeam = @ShowOnPublicTeam
+                    ShowOnDashboard = @ShowOnDashboard, PublicTitle = @PublicTitle, ShowOnPublicTeam = @ShowOnPublicTeam,
+                    TeamTier = @TeamTier
                 WHERE Id = @Id
             `);
 
