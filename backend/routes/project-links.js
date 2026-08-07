@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
+const { authenticateToken, requireContentManager } = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
@@ -32,7 +33,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', requireContentManager, async (req, res) => {
     try {
         const { projectCode, projectName, toolType, linkLabel, linkUrl, sortOrder } = req.body;
         if (!projectCode || !projectName || !toolType || !linkLabel || !linkUrl) {
@@ -58,7 +59,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireContentManager, async (req, res) => {
     try {
         const { projectCode, projectName, toolType, linkLabel, linkUrl, sortOrder } = req.body;
         if (!projectCode || !projectName || !toolType || !linkLabel || !linkUrl) {
@@ -94,7 +95,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireContentManager, async (req, res) => {
     try {
         const pool = await poolPromise;
         const check = await pool.request()

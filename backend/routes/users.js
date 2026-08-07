@@ -1,29 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { poolPromise, sql } = require('../db');
-
-// Middleware to protect routes and verify admin role
-const authenticateAdmin = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (token == null) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            console.error('JWT Verification Error:', err.message);
-            return res.status(401).json({ error: 'Session expired. Please log in again.' });
-        }
-        if (user.role !== 'admin') return res.status(403).json({ error: 'Requires admin privileges' });
-        req.user = user;
-        next();
-    });
-};
+const { requireAdmin } = require('../middleware/auth');
 
 // GET all users
-router.get('/', authenticateAdmin, async (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
@@ -39,7 +21,7 @@ router.get('/', authenticateAdmin, async (req, res) => {
 });
 
 // POST create new user
-router.post('/', authenticateAdmin, async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
     const { username, password, role, displayName, showOnDashboard } = req.body;
     
     if (!username || !password || !role) {
@@ -107,7 +89,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
 });
 
 // PUT update user (role, username, isActive)
-router.put('/:id', authenticateAdmin, async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { username, role, isActive, displayName, showOnDashboard } = req.body;
 
@@ -151,7 +133,7 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
 });
 
 // PUT reset user password
-router.put('/:id/password', authenticateAdmin, async (req, res) => {
+router.put('/:id/password', requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { password } = req.body;
 
@@ -180,7 +162,7 @@ router.put('/:id/password', authenticateAdmin, async (req, res) => {
 });
 
 // DELETE a user
-router.delete('/:id', authenticateAdmin, async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {

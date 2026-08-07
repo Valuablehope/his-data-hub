@@ -17,8 +17,14 @@ export const AuthProvider = ({ children }) => {
                 const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
                     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
                 }).join(''));
-                
-                setUser(JSON.parse(jsonPayload));
+
+                const payload = JSON.parse(jsonPayload);
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    // Stale token from a previous session
+                    logout();
+                } else {
+                    setUser(payload);
+                }
             } catch (e) {
                 console.error("Invalid token", e);
                 logout();
@@ -50,8 +56,16 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const isAuthenticated = !!user && !!token;
+    const role = user?.role ?? null;
+    const hasRole = (...roles) => {
+        if (!role) return false;
+        const normalized = roles.map(r => r.toLowerCase());
+        return normalized.includes(String(role).toLowerCase());
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, logout, loading, isAuthenticated, role, hasRole }}>
             {children}
         </AuthContext.Provider>
     );

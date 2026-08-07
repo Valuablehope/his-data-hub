@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, X, Check, Save, Building2, ChevronDown } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 import '../facilities.css';
 
 const FACILITY_TYPES = ['PHCC', 'Referral Hospital', 'Teaching Hospital'];
@@ -79,6 +80,7 @@ export default function FacilityForm() {
   const navigate = useNavigate();
   const { id }   = useParams();
   const isEdit   = Boolean(id);
+  const { token } = useContext(AuthContext);
 
   const [grants,  setGrants]  = useState([]);
   const [saving,  setSaving]  = useState(false);
@@ -93,10 +95,11 @@ export default function FacilityForm() {
 
   // Load grants + existing facility data (for edit)
   useEffect(() => {
+    const authHeaders = { headers: { 'Authorization': `Bearer ${token}` } };
     const reqs = [
-      fetchApi(`${API_BASE_URL}/facilities/meta/grants`).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities/meta/grants`, authHeaders).then(r => r.json()),
     ];
-    if (isEdit) reqs.push(fetchApi(`${API_BASE_URL}/facilities/${id}`).then(r => r.json()));
+    if (isEdit) reqs.push(fetchApi(`${API_BASE_URL}/facilities/${id}`, authHeaders).then(r => r.json()));
 
     Promise.all(reqs).then(([grnts, fac]) => {
       setGrants(grnts);
@@ -109,7 +112,7 @@ export default function FacilityForm() {
         });
       }
     }).catch(console.error);
-  }, [id]);
+  }, [id, token]);
 
   const set = (key, val) => {
     setForm(f => ({ ...f, [key]: val }));
@@ -142,7 +145,7 @@ export default function FacilityForm() {
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetchApi(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           name:              form.name,
           type:              form.type,

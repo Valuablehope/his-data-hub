@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { User, Lock, ArrowRight } from 'lucide-react';
 
@@ -8,8 +8,13 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useContext(AuthContext);
+    const { login, isAuthenticated, loading } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    if (!loading && isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,7 +22,8 @@ const Login = () => {
         setIsLoading(true);
         try {
             await login(username, password);
-            navigate('/dashboard');
+            const from = location.state?.from?.pathname || '/dashboard';
+            navigate(from, { replace: true });
         } catch (err) {
             setError(err.message || 'Login failed');
         } finally {

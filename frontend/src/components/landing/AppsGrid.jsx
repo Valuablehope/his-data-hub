@@ -1,15 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, FileText, Network, Building2, FolderOpen, BookMarked, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import { NAV_ITEMS } from '../../config/navItems';
 
-const APPS = [
-  { to: '/dashboard', icon: Activity, color: '#E3000F', title: 'Mission Dashboard', description: 'Live snapshot of mission status and data infrastructure.' },
-  { to: '/documentation', icon: FileText, color: '#6366f1', title: 'SOPs', description: 'Standard operating procedures and policy documentation.' },
-  { to: '/flows', icon: Network, color: '#14b8a6', title: 'Flow Manuals', description: 'Step-by-step data flow documentation across systems.' },
-  { to: '/facilities', icon: Building2, color: '#3b82f6', title: 'Facilities', description: 'Directory of tracked health facilities and their status.' },
-  { to: '/files', icon: FolderOpen, color: '#f59e0b', title: 'Files', description: 'Shared documents and uploaded reference material.' },
-  { to: '/project-links', icon: BookMarked, color: '#64748b', title: 'Project Links', description: 'Reporting and budget tools used across mission projects.' },
-];
+const APPS = NAV_ITEMS.filter(item => !item.adminOnly && !item.soon);
 
 const AppsGrid = () => {
   return (

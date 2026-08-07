@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 
 /* Status → hex color (used for top border, dot, avatar ring) */
 const STATUS_HEX = {
@@ -27,10 +28,13 @@ const getAvatarStyle = name =>
 const AvailabilityBoard = () => {
     const [team, setTeam]       = useState([]);
     const [loading, setLoading] = useState(true);
+    const { token } = useContext(AuthContext);
 
     const fetchAvailability = async () => {
         try {
-            const res = await fetchApi(`${API_BASE_URL}/availability`);
+            const res = await fetchApi(`${API_BASE_URL}/availability`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) setTeam(await res.json());
         } catch (err) {
             console.error('Error fetching availability:', err);
@@ -48,7 +52,7 @@ const AvailabilityBoard = () => {
             clearInterval(interval);
             window.removeEventListener('availabilityUpdated', handleUpdate);
         };
-    }, []);
+    }, [token]);
 
     if (loading) {
         return (

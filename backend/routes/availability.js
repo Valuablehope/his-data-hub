@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const { poolPromise, sql } = require('../db');
 const { AVAILABILITY_STATUSES, RESOLVED_STATUS_SQL, AVAILABILITY_JOIN_SQL } = require('../utils/availabilityStatus');
+const { authenticateToken } = require('../middleware/auth');
 
-// Public route to get all HIS team member availabilities (incorporating weekly schedule overrides)
-router.get('/', async (req, res) => {
+// Get all HIS team member availabilities (incorporating weekly schedule overrides)
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
@@ -26,20 +26,6 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
-// Middleware to protect routes
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (token == null) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-};
 
 // Protected route to update logged-in user's availability status manually
 router.put('/', authenticateToken, async (req, res) => {

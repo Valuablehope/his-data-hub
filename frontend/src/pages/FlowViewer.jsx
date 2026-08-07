@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit3, Download } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
 const FlowViewer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
   const [flow, setFlow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    fetchApi(`${API_BASE_URL}/flows/${id}`)
+    fetchApi(`${API_BASE_URL}/flows/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => {
         if (!res.ok) throw new Error('Flow not found');
         return res.json();
@@ -28,7 +32,7 @@ const FlowViewer = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, token]);
 
   // Inject a custom version picker dropdown into the hero's Version meta field.
   // The panel is appended to document.body (position:fixed) to escape the

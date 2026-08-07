@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 const { RESOLVED_STATUS_SQL, AVAILABILITY_JOIN_SQL } = require('../utils/availabilityStatus');
+const { authenticateToken } = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
 

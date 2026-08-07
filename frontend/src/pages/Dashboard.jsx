@@ -267,7 +267,7 @@ const greetingForHour = (h) => (h < 12 ? 'Good morning' : h < 18 ? 'Good afterno
 
 /* ─── Dashboard ──────────────────────────────────────────────── */
 const Dashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -278,9 +278,10 @@ const Dashboard = () => {
     setLoading(true);
     setError(false);
     try {
+      const authHeaders = { headers: { 'Authorization': `Bearer ${token}` } };
       const [dashRes, availRes] = await Promise.all([
-        fetchApi(`${API_BASE_URL}/dashboard`),
-        fetchApi(`${API_BASE_URL}/availability`),
+        fetchApi(`${API_BASE_URL}/dashboard`, authHeaders),
+        fetchApi(`${API_BASE_URL}/availability`, authHeaders),
       ]);
       if (!dashRes.ok) throw new Error('Failed to load dashboard stats');
       const dashJson = await dashRes.json();
@@ -294,7 +295,7 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { loadDashboard(); }, [loadDashboard]);
 

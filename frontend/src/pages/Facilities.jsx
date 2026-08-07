@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Plus, ChevronUp, ChevronDown, Download, Eye, Edit2, Trash2,
@@ -6,6 +6,7 @@ import {
   AlertCircle, Building,
 } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 import '../facilities.css';
 
 /* ─── Helpers ───────────────────────────────────────────── */
@@ -47,6 +48,7 @@ function GrantBadge({ grant }) {
 /* ─── Main Component ─────────────────────────────────────── */
 export default function Facilities() {
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   const [facilities, setFacilities] = useState([]);
   const [grants,     setGrants]     = useState([]);
@@ -63,10 +65,11 @@ export default function Facilities() {
   // Fetch all data on mount
   useEffect(() => {
     setLoading(true);
+    const authHeaders = { headers: { 'Authorization': `Bearer ${token}` } };
     Promise.all([
-      fetchApi(`${API_BASE_URL}/facilities`).then(r => r.json()),
-      fetchApi(`${API_BASE_URL}/facilities/meta/grants`).then(r => r.json()),
-      fetchApi(`${API_BASE_URL}/facilities/meta/options`).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities`, authHeaders).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities/meta/grants`, authHeaders).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities/meta/options`, authHeaders).then(r => r.json()),
     ])
     .then(([facs, grnts, opts]) => {
       setFacilities(facs);
@@ -78,7 +81,7 @@ export default function Facilities() {
       setError(err.message || 'Failed to load facilities');
       setLoading(false);
     });
-  }, []);
+  }, [token]);
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
@@ -132,12 +135,15 @@ export default function Facilities() {
     e.stopPropagation();
     if (!window.confirm('Are you sure you want to delete this facility?')) return;
     try {
-      await fetchApi(`${API_BASE_URL}/facilities/${id}`, { method: 'DELETE' });
+      await fetchApi(`${API_BASE_URL}/facilities/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
       setFacilities(prev => prev.filter(f => f.id !== id));
     } catch {
       alert('Failed to delete facility.');
     }
-  }, []);
+  }, [token]);
 
   const handleExport = useCallback(() => {
     const headers = ['#', 'PHCC Name', 'Type', 'District', 'Base', 'Main Grant', 'Coverage Month', 'Status', 'Last Updated'];

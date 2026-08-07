@@ -13,7 +13,9 @@ const StatusUpdater = () => {
     useEffect(() => {
         const fetchMyStatus = async () => {
             try {
-                const res = await fetchApi(`${API_BASE_URL}/availability`);
+                const res = await fetchApi(`${API_BASE_URL}/availability`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     const me = data.find(m => m.Username === user.username);
@@ -34,7 +36,7 @@ const StatusUpdater = () => {
         const handleUpdate = () => fetchMyStatus();
         window.addEventListener('availabilityUpdated', handleUpdate);
         return () => window.removeEventListener('availabilityUpdated', handleUpdate);
-    }, [user]);
+    }, [user, token]);
 
     const handleSave = async () => {
         setIsSaving(true);

@@ -1,24 +1,21 @@
 import React, { useContext } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { NAV_ITEMS } from '../config/navItems';
 import UserMenu from './UserMenu';
-import {
-  Activity,
-  FileText,
-  Network,
-  ClipboardCheck,
-  FolderOpen,
-  Building2,
-  BookMarked,
-  Search,
-  UserCircle,
-  LogOut,
-  LogIn
-} from 'lucide-react';
+import { LogIn } from 'lucide-react';
 
 const FloatingNav = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, hasRole } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // On the landing page, a logged-out visitor sees AppsGrid as their single
+  // "where can I go" surface — showing the full internal nav here too is
+  // premature chrome that duplicates it.
+  const showNavLinks = !!user || location.pathname !== '/';
+
+  const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || hasRole('admin'));
 
   return (
     <div className="floating-nav-wrapper">
@@ -30,51 +27,36 @@ const FloatingNav = () => {
            <span className="nav-logo-text">HIS DATA HUB</span>
         </Link>
 
-        <div className="nav-links">
-          <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <Activity size={16} />
-            <span>Dashboard</span>
-          </NavLink>
-          <NavLink to="/documentation" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <FileText size={16} />
-            <span>SOPs</span>
-          </NavLink>
-          <NavLink to="/flows" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <Network size={16} />
-            <span>Flows</span>
-          </NavLink>
-          <NavLink to="/forms" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <ClipboardCheck size={16} />
-            <span>Forms</span>
-            <span className="nav-soon-badge">Soon</span>
-          </NavLink>
-          <NavLink to="/files" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <FolderOpen size={16} />
-            <span>Files</span>
-          </NavLink>
-          <NavLink to="/facilities" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <Building2 size={16} />
-            <span>Facilities</span>
-          </NavLink>
-          <NavLink to="/project-links" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-            <BookMarked size={16} />
-            <span>Project Links</span>
-          </NavLink>
+        {showNavLinks && (
+          <div className="nav-links">
+            {visibleItems.map(item => {
+              const Icon = item.icon;
+              if (item.soon) {
+                return (
+                  <span key={item.to} className="nav-item nav-item--disabled" aria-disabled="true" title={`${item.label} — coming soon`}>
+                    <Icon size={16} />
+                    <span>{item.label}</span>
+                    <span className="nav-soon-badge">Soon</span>
+                  </span>
+                );
+              }
+              return (
+                <NavLink key={item.to} to={item.to} className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                  <Icon size={16} />
+                  <span>{item.label}</span>
+                </NavLink>
+              );
+            })}
 
-          <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
-          <a href="https://tixo.his-pui.org/" target="_blank" rel="noopener noreferrer" className="nav-item">
-            <img src={`${import.meta.env.BASE_URL}favicon_TIXO.svg`} alt="TIXO" width="16" height="16" style={{ flexShrink: 0 }} />
-            <span>TIXO Tickets</span>
-          </a>
-        </div>
+            <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.5rem' }}></div>
+            <a href="https://tixo.his-pui.org/" target="_blank" rel="noopener noreferrer" className="nav-item">
+              <img src={`${import.meta.env.BASE_URL}favicon_TIXO.svg`} alt="TIXO" width="16" height="16" style={{ flexShrink: 0 }} />
+              <span>TIXO Tickets</span>
+            </a>
+          </div>
+        )}
 
         <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button className="icon-btn" title="Search (Ctrl+K)">
-            <Search size={18} />
-          </button>
-          
-          <div style={{ width: '1px', height: '16px', background: 'rgba(0,0,0,0.1)', margin: '0 0.25rem' }}></div>
-          
           {user ? (
             <UserMenu />
           ) : (

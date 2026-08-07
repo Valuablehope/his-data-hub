@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Plus, FileText } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 
 const Flows = () => {
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchApi(`${API_BASE_URL}/flows`)
+    fetchApi(`${API_BASE_URL}/flows`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         setFlows(data);
@@ -19,7 +23,7 @@ const Flows = () => {
         console.error("Failed to load flows:", err);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   return (
     <div className="page-content">

@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { UploadCloud, File as FileIcon, Download, Clock, User, FileText, FileBadge, Trash2 } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 
 const Files = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const { token } = useContext(AuthContext);
 
   const fetchFiles = () => {
-    fetchApi(`${API_BASE_URL}/files`)
+    fetchApi(`${API_BASE_URL}/files`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         setFiles(data);
@@ -23,7 +27,7 @@ const Files = () => {
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [token]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -42,6 +46,7 @@ const Files = () => {
 
     fetchApi(`${API_BASE_URL}/files/upload`, {
       method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
       body: formData,
     })
     .then(res => {
@@ -70,6 +75,7 @@ const Files = () => {
     
     fetchApi(`${API_BASE_URL}/files/${id}`, {
       method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
     })
     .then(res => {
       if (!res.ok) throw new Error('Delete failed');

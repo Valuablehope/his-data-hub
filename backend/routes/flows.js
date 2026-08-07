@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 const sanitizeHtml = require('sanitize-html');
+const { authenticateToken, requireContentManager } = require('../middleware/auth');
 
 // Get all flows — one card per version group (latest version wins)
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         let result;
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get single flow by ID (includes sibling versions if FlowGroupId is set)
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
@@ -74,7 +75,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new flow
-router.post('/', async (req, res) => {
+router.post('/', requireContentManager, async (req, res) => {
     try {
         const { title, subtitle, systemName, program, version, documentDate, htmlContent, builderState } = req.body;
         
@@ -115,7 +116,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update existing flow
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireContentManager, async (req, res) => {
     try {
         const { title, subtitle, systemName, program, version, documentDate, htmlContent, builderState } = req.body;
         
@@ -168,7 +169,7 @@ router.put('/:id', async (req, res) => {
 const { createTixoTicket } = require('../services/tixoService');
 
 // Trigger a sync for a flow
-router.post('/:id/sync', async (req, res) => {
+router.post('/:id/sync', requireContentManager, async (req, res) => {
     const flowId = req.params.id;
     // For MVP, return a generic success status
     setTimeout(() => {

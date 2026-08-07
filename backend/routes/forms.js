@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 const { createTixoTicket } = require('../services/tixoService');
+const { authenticateToken } = require('../middleware/auth');
 
 // Submit a new activity form (Now integrated with TIXO)
-router.post('/submit', async (req, res) => {
+router.post('/submit', authenticateToken, async (req, res) => {
     try {
         const { title, description, category_id, priority, source_channel } = req.body;
         

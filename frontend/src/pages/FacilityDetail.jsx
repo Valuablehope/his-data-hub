@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, Building, Shield, Edit2, Trash2,
@@ -6,6 +6,7 @@ import {
   Globe, Layers, MapPin, Plus, X, Save, Check,
 } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 import '../facilities.css';
 
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -53,6 +54,7 @@ function DetailSkeleton() {
 
 /* ─── Coverage Edit Slide-Over ───────────────────────────── */
 function CoverageSlideOver({ record, facilityId, grants, onSave, onClose }) {
+  const { token } = useContext(AuthContext);
   const isNew = record === 'new';
 
   const [form, setForm] = useState({
@@ -79,7 +81,7 @@ function CoverageSlideOver({ record, facilityId, grants, onSave, onClose }) {
     try {
       const res = await fetchApi(`${API_BASE_URL}/facilities/${facilityId}/coverage`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           mainGrantId:  Number(form.mainGrantId),
           month:        Number(form.month),
@@ -248,6 +250,7 @@ function CoverageSlideOver({ record, facilityId, grants, onSave, onClose }) {
 export default function FacilityDetail() {
   const navigate = useNavigate();
   const { id }   = useParams();
+  const { token } = useContext(AuthContext);
 
   const [facility,  setFacility]  = useState(null);
   const [coverage,  setCoverage]  = useState([]);
@@ -260,14 +263,15 @@ export default function FacilityDetail() {
   // Edit slide-over
   const [editRecord, setEditRecord] = useState(null); // null | record | 'new'
 
-  const loadData = () =>
-    Promise.all([
-      fetchApi(`${API_BASE_URL}/facilities/${id}`).then(r => {
+  const loadData = () => {
+    const authHeaders = { headers: { 'Authorization': `Bearer ${token}` } };
+    return Promise.all([
+      fetchApi(`${API_BASE_URL}/facilities/${id}`, authHeaders).then(r => {
         if (!r.ok) throw new Error('Facility not found');
         return r.json();
       }),
-      fetchApi(`${API_BASE_URL}/facilities/${id}/coverage`).then(r => r.json()),
-      fetchApi(`${API_BASE_URL}/facilities/meta/grants`).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities/${id}/coverage`, authHeaders).then(r => r.json()),
+      fetchApi(`${API_BASE_URL}/facilities/meta/grants`, authHeaders).then(r => r.json()),
     ]).then(([fac, cov, grnts]) => {
       setFacility(fac);
       setCoverage(cov);
@@ -275,6 +279,7 @@ export default function FacilityDetail() {
       const years = [...new Set(cov.map(c => c.year))].sort((a, b) => b - a);
       if (!historyYear) setHistoryYear(years[0] || new Date().getFullYear());
     });
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -282,7 +287,7 @@ export default function FacilityDetail() {
     loadData()
       .catch(err => setError(err.message || 'Failed to load facility'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, token]);
 
   const availableYears = useMemo(
     () => [...new Set(coverage.map(c => c.year))].sort((a, b) => b - a),

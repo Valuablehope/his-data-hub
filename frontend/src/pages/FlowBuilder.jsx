@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2, Edit3, Type, Info, CheckCircle2 } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
+import { AuthContext } from '../context/AuthContext';
 
 const FlowBuilder = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { token } = useContext(AuthContext);
   
   const [metadata, setMetadata] = useState({
     title: '',
@@ -33,7 +35,9 @@ const FlowBuilder = () => {
 
   useEffect(() => {
     if (id) {
-      fetchApi(`${API_BASE_URL}/flows/${id}`)
+      fetchApi(`${API_BASE_URL}/flows/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
         .then(res => res.json())
         .then(data => {
           if (data.BuilderState) {
@@ -62,7 +66,7 @@ const FlowBuilder = () => {
           setLoading(false);
         });
     }
-  }, [id, navigate]);
+  }, [id, navigate, token]);
 
   const addSection = () => {
     setSections([
@@ -230,7 +234,7 @@ const FlowBuilder = () => {
 
     fetchApi(url, {
       method: method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify(payload)
     })
       .then(res => {

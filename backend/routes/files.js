@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { poolPromise } = require('../db');
+const { authenticateToken } = require('../middleware/auth');
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, '..', 'uploads');
@@ -34,7 +35,7 @@ const upload = multer({
 });
 
 // GET /api/files - Get all uploaded files
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query('SELECT * FROM UploadedFiles ORDER BY CreatedAt DESC');
@@ -46,7 +47,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/files/upload - Upload a new file
-router.post('/upload', upload.single('document'), async (req, res) => {
+router.post('/upload', authenticateToken, upload.single('document'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded or invalid file type' });
     }
@@ -104,7 +105,7 @@ router.get('/download/:id', async (req, res) => {
 });
 
 // DELETE /api/files/:id - Delete a file
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()

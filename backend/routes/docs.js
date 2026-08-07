@@ -1,27 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const { poolPromise, sql } = require('../db');
-
-const authenticateAdmin = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (token == null) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            console.error('JWT Verification Error:', err.message);
-            return res.status(401).json({ error: 'Session expired. Please log in again.' });
-        }
-        if (user.role !== 'admin') return res.status(403).json({ error: 'Requires admin privileges' });
-        req.user = user;
-        next();
-    });
-};
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 // Get all documents (metadata only)
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query('SELECT TOP 500 Id, Title, Category, UpdatedAt FROM Documents ORDER BY UpdatedAt DESC');
@@ -37,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get document content
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()
@@ -81,7 +64,7 @@ INSERT INTO Documents (Title, Category, Content) VALUES ('Test SOP', 'SOP', '# W
 });
 
 // Create a new document
-router.post('/', authenticateAdmin, async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
     const { title, category, content } = req.body;
     if (!title || !category || !content) {
         return res.status(400).json({ error: 'Title, Category, and Content are required' });
@@ -106,7 +89,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
 });
 
 // Update an existing document
-router.put('/:id', authenticateAdmin, async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
     const { title, category, content } = req.body;
     if (!title || !category || !content) {
         return res.status(400).json({ error: 'Title, Category, and Content are required' });
@@ -132,7 +115,7 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
 });
 
 // Delete a document
-router.delete('/:id', authenticateAdmin, async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
     try {
         const pool = await poolPromise;
         await pool.request()

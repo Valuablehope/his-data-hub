@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { poolPromise } = require('../db');
+const { authenticateToken, requireContentManager } = require('../middleware/auth');
 
 /* ─── shared query helpers ───────────────────────────────── */
 
@@ -75,7 +76,7 @@ async function queryFacilities(pool, extraWhere = '', inputs = {}) {
 }
 
 /* ─── GET /api/facilities ────────────────────────────────── */
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const { search, type, area, base, status, mainGrant } = req.query;
@@ -104,7 +105,7 @@ router.get('/', async (req, res) => {
 
 /* ─── GET /api/facilities/meta/grants ────────────────────── */
 // Must be defined BEFORE /:id to avoid route collision
-router.get('/meta/grants', async (req, res) => {
+router.get('/meta/grants', authenticateToken, async (req, res) => {
     try {
         const pool   = await poolPromise;
         const result = await pool.request()
@@ -118,7 +119,7 @@ router.get('/meta/grants', async (req, res) => {
 
 /* ─── GET /api/facilities/meta/options ───────────────────── */
 // Returns distinct filter values for dropdowns
-router.get('/meta/options', async (req, res) => {
+router.get('/meta/options', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const [types, areas, bases, statuses] = await Promise.all([
@@ -140,7 +141,7 @@ router.get('/meta/options', async (req, res) => {
 });
 
 /* ─── GET /api/facilities/:id ────────────────────────────── */
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const pool = await poolPromise;
         const rows = await queryFacilities(pool, 'AND f.Id = @facId', { facId: parseInt(req.params.id) });
@@ -181,7 +182,7 @@ router.get('/:id', async (req, res) => {
 });
 
 /* ─── POST /api/facilities ───────────────────────────────── */
-router.post('/', async (req, res) => {
+router.post('/', requireContentManager, async (req, res) => {
     const { name, type, area, base, address, coordinates, status, notes, updatedBy } = req.body;
     if (!name || !type || !area || !base) {
         return res.status(400).json({ error: 'name, type, area and base are required' });
@@ -214,7 +215,7 @@ router.post('/', async (req, res) => {
 });
 
 /* ─── PUT /api/facilities/:id ────────────────────────────── */
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireContentManager, async (req, res) => {
     const { name, type, area, base, address, coordinates, status, notes, updatedBy } = req.body;
     if (!name || !type || !area || !base) {
         return res.status(400).json({ error: 'name, type, area and base are required' });
@@ -250,7 +251,7 @@ router.put('/:id', async (req, res) => {
 });
 
 /* ─── DELETE /api/facilities/:id (soft delete) ───────────── */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireContentManager, async (req, res) => {
     try {
         const pool   = await poolPromise;
         const result = await pool.request()
@@ -265,7 +266,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 /* ─── GET /api/facilities/:id/coverage ──────────────────── */
-router.get('/:id/coverage', async (req, res) => {
+router.get('/:id/coverage', authenticateToken, async (req, res) => {
     try {
         const pool  = await poolPromise;
         const facId = parseInt(req.params.id);
@@ -339,7 +340,7 @@ router.get('/:id/coverage', async (req, res) => {
 });
 
 /* ─── POST /api/facilities/:id/coverage ─────────────────── */
-router.post('/:id/coverage', async (req, res) => {
+router.post('/:id/coverage', requireContentManager, async (req, res) => {
     const { mainGrantId, secondaryGrantIds = [], month, year, status,
             periodStart, periodEnd, activities, notes, updatedBy } = req.body;
     if (!mainGrantId || !month || !year) {

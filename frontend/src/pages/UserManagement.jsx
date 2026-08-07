@@ -57,10 +57,8 @@ const UserManagement = () => {
     };
 
     useEffect(() => {
-        if (user?.role === 'admin') {
-            fetchUsers();
-        }
-    }, [token, user]);
+        fetchUsers();
+    }, [token]);
 
     const openAddModal = () => {
         setEditingUser(null);
@@ -175,10 +173,6 @@ const UserManagement = () => {
             alert(err.message);
         }
     };
-
-    if (user?.role !== 'admin') {
-        return <div className="page-content">Access Denied. Admin only.</div>;
-    }
 
     return (
         <div className="page-content">

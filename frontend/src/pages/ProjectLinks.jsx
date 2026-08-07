@@ -341,8 +341,8 @@ function LinkModal({ initial, onClose, onSave, saving }) {
 /* ─── Main page ──────────────────────────────────────────────────────── */
 
 export default function ProjectLinks() {
-  const { user } = useContext(AuthContext);
-  const isAdmin = !!user;
+  const { token, hasRole } = useContext(AuthContext);
+  const isAdmin = hasRole('admin', 'HIS_TEAM');
 
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -353,11 +353,13 @@ export default function ProjectLinks() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchApi(`${API_BASE_URL}/project-links`)
+    fetchApi(`${API_BASE_URL}/project-links`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(r => r.json())
       .then(data => { setLinks(data); setLoading(false); })
       .catch(() => { setError('Failed to load project links.'); setLoading(false); });
-  }, []);
+  }, [token]);
 
   const projects = useMemo(() => {
     const filtered = links.filter(l => {
@@ -388,7 +390,7 @@ export default function ProjectLinks() {
         : `${API_BASE_URL}/project-links`;
       const res = await fetchApi(url, {
         method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(form),
       });
       if (!res.ok) throw new Error('Save failed');
@@ -408,7 +410,10 @@ export default function ProjectLinks() {
 
   async function handleDelete(id) {
     try {
-      await fetchApi(`${API_BASE_URL}/project-links/${id}`, { method: 'DELETE' });
+      await fetchApi(`${API_BASE_URL}/project-links/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
       setLinks(prev => prev.filter(l => l.Id !== id));
     } catch {
       alert('Failed to delete link.');
