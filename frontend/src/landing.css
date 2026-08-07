@@ -24,6 +24,30 @@
   pointer-events: none;
 }
 
+/* Same blueprint-grid identity as the Hero, reused wherever an unauthenticated
+   "HIS Data Hub" branded page needs the dark systems background (e.g. Login). */
+.hub-grid-bg {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.10), transparent 60%),
+    #060a12;
+  background-image:
+    linear-gradient(rgba(94, 234, 212, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.10), transparent 60%),
+    #060a12;
+  background-size: 42px 42px, 42px 42px, 100% 100%, 100% 100%;
+  background-position: center, center, center, center;
+}
+
+.hub-grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, transparent 30%, #060a12 85%);
+  pointer-events: none;
+}
+
 /* ─── Status pill (LIVE / SYNCED style indicator) ────────────────────── */
 .hub-status-pill {
   display: inline-flex;

@@ -216,8 +216,8 @@ const UserMenu = () => {
 
                     {/* Admin Panel */}
                     {user.role === 'admin' && (
-                        <NavLink 
-                            to="/users" 
+                        <NavLink
+                            to="/admin"
                             onClick={() => setIsOpen(false)}
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem',

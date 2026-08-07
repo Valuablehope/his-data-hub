@@ -1,12 +1,15 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import FloatingNav from './FloatingNav';
 
 const AppShell = () => {
+  const location = useLocation();
+  const hideNav = location.pathname === '/login';
+
   return (
     <div className="app-container">
-      <FloatingNav />
-      <main className="main-content">
+      {!hideNav && <FloatingNav />}
+      <main className={`main-content${hideNav ? ' main-content--no-nav' : ''}`}>
         <Outlet />
       </main>
     </div>

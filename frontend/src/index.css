@@ -260,11 +260,34 @@ body {
   padding-top: var(--nav-clearance);
 }
 
+.main-content--no-nav {
+  padding-top: 0;
+}
+
 .page-content {
   padding: 2.5rem;
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+}
+
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.admin-tab:hover { color: var(--text-secondary); }
+.admin-tab.active {
+  color: var(--primary-red);
+  border-bottom-color: var(--primary-red);
 }
 
 /* Bento Grid Dashboard */

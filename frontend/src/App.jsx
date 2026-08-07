@@ -17,6 +17,7 @@ import DocumentForm from './pages/DocumentForm';
 import Facilities from './pages/Facilities';
 import FacilityDetail from './pages/FacilityDetail';
 import FacilityForm from './pages/FacilityForm';
+import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
 import PlatformLinks from './pages/PlatformLinks';
 import ProjectLinks from './pages/ProjectLinks';
@@ -46,8 +47,14 @@ function App() {
             </Route>
 
             <Route element={<ProtectedRoute roles={['admin']} />}>
-              <Route path="/users" element={<UserManagement />} />
-              <Route path="/settings/platform-links" element={<PlatformLinks />} />
+              <Route path="/admin" element={<AdminPanel />}>
+                <Route index element={<Navigate to="/admin/users" replace />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="platform-links" element={<PlatformLinks />} />
+              </Route>
+              {/* Legacy paths — keep old bookmarks/links working */}
+              <Route path="/users" element={<Navigate to="/admin/users" replace />} />
+              <Route path="/settings/platform-links" element={<Navigate to="/admin/platform-links" replace />} />
               <Route path="/documentation/add" element={<DocumentForm />} />
               <Route path="/documentation/edit/:id" element={<DocumentForm />} />
             </Route>
