@@ -32,6 +32,12 @@
   --radius-lg: 1.5rem;
   --radius-full: 9999px;
 
+  /* Space reserved at the top of .main-content to clear the fixed floating nav.
+     Sections with their own full-bleed background (e.g. the landing Hero) cancel
+     this out with a matching negative margin so their background reaches the
+     true top of the viewport instead of leaving a blank gap under the nav. */
+  --nav-clearance: 100px;
+
   --space-1: 0.25rem;   /* 4px */
   --space-2: 0.5rem;    /* 8px */
   --space-3: 0.75rem;   /* 12px */
@@ -251,7 +257,7 @@ body {
 
 .main-content {
   flex: 1;
-  padding-top: 100px;
+  padding-top: var(--nav-clearance);
 }
 
 .page-content {

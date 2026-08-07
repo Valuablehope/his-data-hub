@@ -5,7 +5,13 @@ import NetworkDiagram from './NetworkDiagram';
 
 const Hero = ({ onExploreClick }) => {
   return (
-    <section className="landing-hero" style={{ padding: '9rem 2rem 4rem', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <section
+      className="landing-hero"
+      style={{
+        padding: '9rem 2rem 4rem', color: '#fff', position: 'relative', overflow: 'hidden',
+        marginTop: 'calc(var(--nav-clearance) * -1)',
+      }}
+    >
       <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <div className="hub-status-pill" style={{ marginBottom: '1.5rem' }}>
           <span className="hub-status-dot" />
