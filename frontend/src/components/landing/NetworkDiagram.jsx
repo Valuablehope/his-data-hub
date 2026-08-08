@@ -9,8 +9,8 @@ const SOURCES = [
 const HUB = { id: 'hub', x: 570, y: 270, label: 'HIS Data Hub' };
 
 const MODULES = [
-  { id: 'sops', x: 1010, y: 40, label: 'SOPs', color: '#818cf8' },
-  { id: 'flows', x: 1010, y: 155, label: 'Flows', color: '#2dd4bf' },
+  { id: 'sops', x: 1010, y: 40, label: 'SOPs', color: '#DF0A20' },
+  { id: 'flows', x: 1010, y: 155, label: 'Flows', color: '#DF0A20' },
   { id: 'facilities', x: 1010, y: 270, label: 'Facilities', color: '#60a5fa' },
   { id: 'files', x: 1010, y: 385, label: 'Files', color: '#fbbf24' },
   { id: 'links', x: 1010, y: 500, label: 'Project Links', color: '#94a3b8' },
@@ -63,10 +63,10 @@ const NetworkDiagram = () => {
       ))}
 
       {SOURCES.map(s => (
-        <Node key={s.id} x={s.x} y={s.y} label={s.label} r={16} coreR={5} color="#5eead4" tag="SOURCE" />
+        <Node key={s.id} x={s.x} y={s.y} label={s.label} r={16} coreR={5} color="#DF0A20" tag="SOURCE" />
       ))}
 
-      <Node x={HUB.x} y={HUB.y} label={HUB.label} r={34} coreR={11} color="#E3000F" tag="HUB" />
+      <Node x={HUB.x} y={HUB.y} label={HUB.label} r={34} coreR={11} color="#DF0A20" tag="HUB" />
       <circle cx={HUB.x} cy={HUB.y} r={34} className="hub-node-broadcast" />
 
       {MODULES.map(m => (

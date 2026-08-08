@@ -7,11 +7,11 @@ import PublicPageHero from '../components/PublicPageHero';
 import '../landing.css';
 import '../public-page.css';
 
-const ACCENT = '#6366f1';
+const ACCENT = '#DF0A20';
 
 const CATEGORY_META = {
-    sop: { icon: Activity, color: '#14b8a6' },
-    policy: { icon: ShieldCheck, color: '#E3000F' },
+    sop: { icon: Activity, color: '#DF0A20' },
+    policy: { icon: ShieldCheck, color: '#DF0A20' },
     manual: { icon: BookOpen, color: '#3b82f6' },
     strategy: { icon: Map, color: '#f59e0b' },
 };

@@ -357,7 +357,7 @@ export default function FacilityDetail() {
                   onClick={() => navigate(`/facilities/edit/${facility.id}`)}>
                   <Edit2 size={13} /> Edit
                 </button>
-                <button className="fac-hd-btn" style={{ height:32, color:'var(--primary-red)', borderColor:'rgba(227,0,15,0.2)' }}>
+                <button className="fac-hd-btn" style={{ height:32, color:'var(--primary-red)', borderColor:'rgba(223,10,32,0.2)' }}>
                   <Trash2 size={13} /> Delete
                 </button>
               </div>

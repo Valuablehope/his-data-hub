@@ -10,8 +10,12 @@
   --text-secondary: #475569;
   --text-muted: #94a3b8;
 
-  --primary-red: #E3000F;
-  --primary-red-glow: rgba(227, 0, 15, 0.15);
+  --primary-red: #DF0A20;
+  --primary-red-glow: rgba(223, 10, 32, 0.15);
+  /* Darker steps of the brand red, for gradients/hover/badge-text contexts
+     that used to reach for the (unrelated) teal ramp below. */
+  --primary-red-dark: #BE091B;
+  --primary-red-darker: #A10717;
 
   --green-500: #22c55e;
   --green-600: #16a34a;
@@ -23,9 +27,6 @@
   --slate-500: #64748b;
   --slate-700: #334155;
   --slate-800: #1e293b;
-  --teal-500: #14b8a6;
-  --teal-600: #0d9488;
-  --teal-700: #0f766e;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -84,8 +85,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(227, 0, 15, 0.05), transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.05), transparent 40%),
+    radial-gradient(circle at 10% 20%, rgba(223, 10, 32, 0.05), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(161, 7, 23, 0.05), transparent 40%),
     radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.04), transparent 50%);
   background-attachment: fixed;
 }
@@ -152,7 +153,7 @@ body {
   height: 28px;
   background: var(--primary-red-glow);
   border-radius: 50%;
-  border: 1px solid rgba(227, 0, 15, 0.25);
+  border: 1px solid rgba(223, 10, 32, 0.25);
 }
 
 .nav-logo-text {
@@ -431,7 +432,7 @@ body {
   color: white;
 }
 .btn-primary:hover {
-  background-color: #C5000D;
+  background-color: #C1091C;
 }
 
 .btn-ghost {
@@ -498,7 +499,7 @@ body {
 }
 
 .text-gradient-red {
-  background: linear-gradient(135deg, #E3000F 0%, #ff4d5a 100%);
+  background: linear-gradient(135deg, var(--primary-red) 0%, #ff4d5a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

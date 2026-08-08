@@ -109,7 +109,7 @@ const UserMenu = () => {
                 <div style={{ position: 'relative' }}>
                     <div style={{
                         width: '36px', height: '36px', borderRadius: '50%',
-                        background: 'linear-gradient(135deg, var(--teal-500), var(--teal-700))',
+                        background: 'linear-gradient(135deg, var(--primary-red), var(--primary-red-darker))',
                         color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '1rem', fontWeight: 'bold', border: '2px solid #fff',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
@@ -194,7 +194,7 @@ const UserMenu = () => {
                                 fontSize: '0.8125rem', outline: 'none', color: 'var(--slate-700)',
                                 backgroundColor: 'rgba(0,0,0,0.02)', transition: 'all 0.2s'
                             }}
-                            onFocus={e => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = 'var(--teal-500)'; }}
+                            onFocus={e => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = 'var(--primary-red)'; }}
                         />
                     </div>
 

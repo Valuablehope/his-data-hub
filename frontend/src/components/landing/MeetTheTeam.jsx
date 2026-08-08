@@ -80,8 +80,8 @@ function TitleBadge({ title, accent }) {
 // scale (photo size, name size) steps down — rendered inside ONE shared panel
 // (not one floating card per tier) so the whole roster reads as a single team.
 const TIER_CONFIG = {
-  1: { label: 'Leadership', accent: '#E3000F', photoSize: 96, nameSize: '1.05rem' },
-  2: { label: 'Coordinators', accent: '#0d9488', photoSize: 76, nameSize: '0.95rem' },
+  1: { label: 'Leadership', accent: '#DF0A20', photoSize: 96, nameSize: '1.05rem' },
+  2: { label: 'Coordinators', accent: '#A10717', photoSize: 76, nameSize: '0.95rem' },
   3: { label: 'Team Members', accent: '#64748b', photoSize: 60, nameSize: '0.875rem' },
 };
 const TIER_ORDER = [1, 2, 3];

@@ -167,7 +167,7 @@ const FlowBuilder = () => {
   align-self: flex-start;
   height: calc(100vh - 100px);
   overflow-y: auto;
-  background: var(--teal-900, #134e4a);
+  background: var(--brand-red-900, #64050E);
   display: flex;
   flex-direction: column;
 }
@@ -392,7 +392,7 @@ const FlowBuilder = () => {
                               onChange={(e) => updateBlock(section.id, block.id, 'color', e.target.value)}
                             >
                               <option value="blue">Blue</option>
-                              <option value="teal">Teal</option>
+                              <option value="teal">Red (Brand)</option>
                               <option value="amber">Amber</option>
                               <option value="coral">Red / Coral</option>
                               <option value="green">Green</option>

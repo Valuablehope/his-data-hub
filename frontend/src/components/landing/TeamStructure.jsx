@@ -6,7 +6,7 @@ const BRANCHES = [
     name: 'Coordination Office',
     tag: 'Central',
     icon: Building2,
-    color: '#E3000F',
+    color: '#DF0A20',
     description: 'Mission-wide oversight of health information strategy, programmatic reporting, and system development across all health programme areas.',
   },
   {
@@ -20,7 +20,7 @@ const BRANCHES = [
     name: 'Tripoli Base',
     tag: 'Field Base',
     icon: MapPin,
-    color: '#14b8a6',
+    color: '#A10717',
     description: 'Field-level technical support to health facilities across the Tripoli catchment — data-entry support, facility follow-up, and reporting.',
   },
 ];

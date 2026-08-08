@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Network, FileText } from 'lucide-react';
 
 const TYPE_META = {
-  flow: { icon: Network, color: '#14b8a6', label: 'FLOW' },
-  document: { icon: FileText, color: '#6366f1', label: 'SOP' },
+  flow: { icon: Network, color: '#DF0A20', label: 'FLOW' },
+  document: { icon: FileText, color: '#A10717', label: 'SOP' },
 };
 
 const RecentActivity = ({ items, loading }) => {
@@ -30,7 +30,7 @@ const RecentActivity = ({ items, loading }) => {
         display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.875rem 1.25rem',
         borderBottom: '1px solid var(--border-color)',
       }}>
-        <span className="hub-status-dot" style={{ background: '#14b8a6', boxShadow: '0 0 8px #14b8a6' }} />
+        <span className="hub-status-dot" style={{ background: '#DF0A20', boxShadow: '0 0 8px #DF0A20' }} />
         <span className="hub-eyebrow">Activity Log</span>
       </div>
 

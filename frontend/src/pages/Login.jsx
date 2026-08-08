@@ -63,7 +63,7 @@ const Login = () => {
                 </div>
                 <div style={{
                     fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
-                    color: '#5eead4', fontFamily: 'var(--font-mono)',
+                    color: '#DF0A20', fontFamily: 'var(--font-mono)',
                 }}>
                     Health Information System · Lebanon Mission
                 </div>
@@ -83,7 +83,7 @@ const Login = () => {
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <div style={{
                         width: '48px', height: '48px', borderRadius: '12px',
-                        background: 'linear-gradient(135deg, var(--primary-red), #C5000D)',
+                        background: 'linear-gradient(135deg, var(--primary-red), #C1091C)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 1rem', color: 'white', boxShadow: '0 4px 16px var(--primary-red-glow)'
                     }}>
@@ -100,9 +100,9 @@ const Login = () => {
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     {error && (
                         <div style={{
-                            padding: '0.75rem', borderRadius: '8px', background: 'rgba(227, 0, 15, 0.06)',
+                            padding: '0.75rem', borderRadius: '8px', background: 'rgba(223, 10, 32, 0.06)',
                             color: 'var(--primary-red)', fontSize: '0.875rem', textAlign: 'center',
-                            border: '1px solid rgba(227, 0, 15, 0.2)'
+                            border: '1px solid rgba(223, 10, 32, 0.2)'
                         }}>
                             {error}
                         </div>

@@ -19,7 +19,7 @@ function Avatar({ user: u, size = 32, photoNonce }) {
         <div style={{
             width: size, height: size, borderRadius: '50%', flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'var(--teal-500)', color: '#fff', fontWeight: 700,
+            background: 'var(--primary-red)', color: '#fff', fontWeight: 700,
             fontSize: size * 0.42,
         }}>
             {initial}
@@ -245,7 +245,7 @@ const UserManagement = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <div style={{
                         width: '40px', height: '40px', borderRadius: '10px',
-                        background: 'linear-gradient(135deg, var(--teal-500), var(--teal-700))',
+                        background: 'linear-gradient(135deg, var(--primary-red), var(--primary-red-darker))',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
                     }}>
                         <Users size={20} />
@@ -255,7 +255,7 @@ const UserManagement = () => {
                         <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.875rem' }}>Manage portal access and roles</p>
                     </div>
                 </div>
-                <button onClick={openAddModal} className="btn btn-primary" style={{ background: 'var(--teal-600)' }}>
+                <button onClick={openAddModal} className="btn btn-primary" style={{ background: 'var(--primary-red)' }}>
                     <Plus size={16} /> Add User
                 </button>
             </div>
@@ -292,8 +292,8 @@ const UserManagement = () => {
                                 <td>
                                     <span style={{ 
                                         padding: '0.25rem 0.5rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '600',
-                                        background: u.Role === 'admin' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(13, 148, 136, 0.1)',
-                                        color: u.Role === 'admin' ? 'var(--red-600)' : 'var(--teal-700)'
+                                        background: u.Role === 'admin' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(223, 10, 32, 0.1)',
+                                        color: u.Role === 'admin' ? 'var(--red-600)' : 'var(--primary-red-darker)'
                                     }}>
                                         {u.Role}
                                     </span>
@@ -425,7 +425,7 @@ const UserManagement = () => {
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-ghost">Cancel</button>
-                                <button type="submit" className="btn btn-primary" style={{ background: 'var(--teal-600)' }}>Save</button>
+                                <button type="submit" className="btn btn-primary" style={{ background: 'var(--primary-red)' }}>Save</button>
                             </div>
                         </form>
                     </div>

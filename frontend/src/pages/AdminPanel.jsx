@@ -9,7 +9,7 @@ const AdminPanel = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <div style={{
             width: '40px', height: '40px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, var(--primary-red), #C5000D)',
+            background: 'linear-gradient(135deg, var(--primary-red), #C1091C)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
           }}>
             <ShieldCheck size={20} />

@@ -115,7 +115,7 @@ const StatusUpdater = () => {
                         disabled={isSaving}
                         style={{
                             padding: '0.375rem 0.75rem', borderRadius: '6px', border: 'none',
-                            background: 'var(--teal-500)', color: '#fff', cursor: 'pointer', fontSize: '0.8125rem',
+                            background: 'var(--primary-red)', color: '#fff', cursor: 'pointer', fontSize: '0.8125rem',
                             display: 'flex', alignItems: 'center', gap: '0.25rem'
                         }}
                     >

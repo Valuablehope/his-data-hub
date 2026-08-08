@@ -5,22 +5,23 @@
    ties on :root custom properties), not just flow manual content. Every
    consumer below is already nested under .flow-container-wrap, so scoping
    here changes nothing structurally — it only stops the leak.
-   The teal ramp itself is also corrected to genuine teal: it was carrying
-   red hex values under "teal" names (a legacy rebrand that never updated
-   the variable names), which made Flows content render in red while the
-   surrounding app now brands Flows in teal (#14b8a6) — and made the
-   infobox/badge/role "teal" variant literally render as red. */
+   This ramp was teal (matching the Flows section's old teal identity);
+   the app has since standardized on the brand red (--primary-red) as the
+   only accent color everywhere, so this is now a red ramp — renamed from
+   --brand-red-* to --brand-red-* to avoid the exact "name lies about the color"
+   bug this same ramp had before (it briefly carried red values under teal
+   names during an earlier rebrand pass). */
 .flow-container-wrap {
-  --teal-900: #134e4a;
-  --teal-800: #115e59;
-  --teal-700: #0f766e;
-  --teal-600: #0d9488;
-  --teal-500: #14b8a6;
-  --teal-400: #2dd4bf;
-  --teal-300: #5eead4;
-  --teal-200: #99f6e4;
-  --teal-100: #ccfbf1;
-  --teal-50:  #f0fdfa;
+  --brand-red-900: #64050E;
+  --brand-red-800: #810613;
+  --brand-red-700: #A10717;
+  --brand-red-600: #BE091B;
+  --brand-red-500: #DF0A20;
+  --brand-red-400: #E95463;
+  --brand-red-300: #F1919B;
+  --brand-red-200: #F7C2C7;
+  --brand-red-100: #FCE7E9;
+  --brand-red-50:  #FDF3F4;
   --slate-950: #0a0a0a;
   --slate-900: #171717;
   --slate-800: #262626;
@@ -66,6 +67,9 @@
 }
 
 /* ─── SIDEBAR ───────────────────────────────────── */
+/* Glassmorphism — same recipe as .floating-nav (high-opacity tint + blur +
+   a hairline inset highlight) rather than a flat opaque fill, so the panel
+   reads as a frosted layer floating over the page instead of a solid block. */
 .flow-container-wrap .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
@@ -74,7 +78,11 @@
   align-self: flex-start;
   height: calc(100vh - 100px); /* Account for main-content padding-top */
   overflow-y: auto;
-  background: var(--teal-900);
+  background: linear-gradient(180deg, rgba(19, 78, 74, 0.92) 0%, rgba(15, 23, 42, 0.94) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.05), 16px 0 40px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
 }
@@ -97,7 +105,7 @@
   font-weight: 600;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--teal-400);
+  color: var(--brand-red-400);
   margin-bottom: 8px;
 }
 
@@ -110,7 +118,7 @@
 
 .flow-container-wrap .sidebar-brand-sub {
   font-size: 12px;
-  color: var(--teal-300);
+  color: var(--brand-red-300);
   margin-top: 6px;
   line-height: 1.4;
 }
@@ -121,7 +129,7 @@
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--teal-500);
+  color: var(--brand-red-500);
 }
 
 .flow-container-wrap .sidebar-part:not(:first-of-type) {
@@ -135,7 +143,7 @@
   gap: 10px;
   padding: 9px 24px;
   font-size: 13px;
-  color: var(--teal-200);
+  color: var(--brand-red-200);
   text-decoration: none;
   transition: all .18s ease;
   border-left: 3px solid transparent;
@@ -145,20 +153,20 @@
 .flow-container-wrap .nav-item:hover {
   color: #fff;
   background: rgba(255,255,255,.05);
-  border-left-color: var(--teal-400);
+  border-left-color: var(--brand-red-400);
 }
 
 .flow-container-wrap .nav-item.active {
   color: #fff;
-  background: rgba(20,184,166,.14);
-  border-left-color: var(--teal-400);
+  background: rgba(223,10,32,.14);
+  border-left-color: var(--brand-red-400);
   font-weight: 500;
 }
 
 .flow-container-wrap .nav-num {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--teal-500);
+  color: var(--brand-red-500);
   min-width: 28px;
 }
 
@@ -167,7 +175,7 @@
   padding: 16px 24px;
   border-top: 1px solid rgba(255,255,255,.06);
   font-size: 11px;
-  color: var(--teal-600);
+  color: var(--brand-red-600);
   line-height: 1.5;
 }
 
@@ -199,7 +207,7 @@
   left: 56px;
   width: 120px;
   height: 2px;
-  background: linear-gradient(90deg, var(--teal-500), transparent);
+  background: linear-gradient(90deg, var(--brand-red-500), transparent);
 }
 
 .flow-container-wrap .hero-content { position: relative; z-index: 1; max-width: var(--content-max); }
@@ -208,22 +216,22 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(20,184,166,.08);
-  border: 1px solid rgba(20,184,166,.25);
+  background: rgba(223,10,32,.08);
+  border: 1px solid rgba(223,10,32,.25);
   border-radius: 20px;
   padding: 4px 12px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--teal-700);
+  color: var(--brand-red-700);
   margin-bottom: 18px;
 }
 
 .flow-container-wrap .hero-tag-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--teal-500);
+  background: var(--brand-red-500);
 }
 
 .flow-container-wrap .hero h1 {
@@ -237,7 +245,7 @@
 
 .flow-container-wrap .hero h1 em {
   font-style: italic;
-  color: var(--teal-600);
+  color: var(--brand-red-600);
 }
 
 .flow-container-wrap .hero-sub {
@@ -274,7 +282,7 @@
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--teal-600);
+  color: var(--brand-red-600);
   margin-bottom: 4px;
 }
 
@@ -297,7 +305,7 @@
   gap: 20px;
   margin: 64px 0 40px;
   padding: 28px 36px;
-  background: var(--teal-800);
+  background: var(--brand-red-800);
   border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
@@ -316,7 +324,7 @@
   font-weight: 600;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--teal-400);
+  color: var(--brand-red-400);
   margin-bottom: 6px;
 }
 
@@ -329,7 +337,7 @@
 
 .flow-container-wrap .part-desc {
   font-size: 14px;
-  color: var(--teal-200);
+  color: var(--brand-red-200);
   margin-top: 4px;
   font-weight: 300;
 }
@@ -359,7 +367,7 @@
 .flow-container-wrap .section-num {
   width: 40px; height: 40px;
   border-radius: var(--radius-sm);
-  background: var(--teal-700);
+  background: var(--brand-red-700);
   color: #fff;
   font-family: var(--font-mono);
   font-size: 13px;
@@ -420,7 +428,7 @@
 .flow-container-wrap .infobox-body ul { padding-left: 18px; margin-top: 6px; }
 .flow-container-wrap .infobox-body li { margin-bottom: 4px; }
 
-.flow-container-wrap .infobox.teal   { background: var(--teal-50);    border-color: var(--teal-500);    color: var(--teal-800); }
+.flow-container-wrap .infobox.teal   { background: var(--brand-red-50);    border-color: var(--brand-red-500);    color: var(--brand-red-800); }
 .flow-container-wrap .infobox.blue   { background: var(--blue-100);   border-color: var(--blue-600);    color: var(--blue-800); }
 .flow-container-wrap .infobox.amber  { background: var(--amber-100);  border-color: var(--amber-600);   color: var(--amber-600); }
 .flow-container-wrap .infobox.coral  { background: var(--coral-100);  border-color: var(--coral-600);   color: var(--coral-600); }
@@ -476,7 +484,7 @@
 
 .flow-container-wrap .flow-card:hover {
   box-shadow: 0 4px 20px rgba(0,0,0,.06);
-  border-color: var(--teal-300);
+  border-color: var(--brand-red-300);
 }
 
 .flow-container-wrap .flow-card-actor {
@@ -529,7 +537,7 @@
 }
 
 .flow-container-wrap thead tr {
-  background: var(--teal-800);
+  background: var(--brand-red-800);
 }
 
 .flow-container-wrap thead th {
@@ -539,7 +547,7 @@
   font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--teal-200);
+  color: var(--brand-red-200);
   white-space: nowrap;
 }
 
@@ -549,9 +557,9 @@
 }
 
 .flow-container-wrap tbody tr:last-child { border-bottom: none; }
-.flow-container-wrap tbody tr:hover { background: var(--teal-50); }
+.flow-container-wrap tbody tr:hover { background: var(--brand-red-50); }
 .flow-container-wrap tbody tr:nth-child(even) { background: var(--slate-50); }
-.flow-container-wrap tbody tr:nth-child(even):hover { background: var(--teal-50); }
+.flow-container-wrap tbody tr:nth-child(even):hover { background: var(--brand-red-50); }
 
 .flow-container-wrap tbody td {
   padding: 11px 16px;
@@ -575,7 +583,7 @@
   white-space: nowrap;
 }
 
-.flow-container-wrap .badge-teal   { background: var(--teal-100);    color: var(--teal-700); }
+.flow-container-wrap .badge-teal   { background: var(--brand-red-100);    color: var(--brand-red-700); }
 .flow-container-wrap .badge-blue   { background: var(--blue-100);    color: var(--blue-800); }
 .flow-container-wrap .badge-amber  { background: var(--amber-100);   color: var(--amber-600); }
 .flow-container-wrap .badge-coral  { background: var(--coral-100);   color: var(--coral-600); }
@@ -618,7 +626,7 @@
   opacity: .5;
 }
 
-.flow-container-wrap .role-teal   { background: var(--teal-50);    border-color: var(--teal-200);    color: var(--teal-800); }
+.flow-container-wrap .role-teal   { background: var(--brand-red-50);    border-color: var(--brand-red-200);    color: var(--brand-red-800); }
 .flow-container-wrap .role-purple { background: var(--purple-100); border-color: rgba(83,74,183,.2); color: var(--purple-600); }
 .flow-container-wrap .role-slate  { background: var(--slate-50);   border-color: var(--slate-200);   color: var(--slate-600); }
 
@@ -652,7 +660,7 @@
   top: -6px;
   width: 3px;
   height: 24px;
-  background: var(--teal-700);
+  background: var(--brand-red-700);
   border-radius: 2px;
   left: calc(21/40 * 100%);
 }
@@ -664,7 +672,7 @@
   transform: translateX(-50%);
   font-size: 10px;
   font-weight: 700;
-  color: var(--teal-700);
+  color: var(--brand-red-700);
   white-space: nowrap;
   font-family: var(--font-mono);
 }
@@ -741,11 +749,11 @@
   display: inline-block;
   font-family: var(--font-mono);
   font-size: 11px;
-  background: var(--teal-50);
-  color: var(--teal-700);
+  background: var(--brand-red-50);
+  color: var(--brand-red-700);
   padding: 3px 10px;
   border-radius: 4px;
-  border: 1px solid var(--teal-200);
+  border: 1px solid var(--brand-red-200);
 }
 
 .flow-container-wrap .section-rule {

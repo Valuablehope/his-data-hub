@@ -10,7 +10,7 @@ const AccessDenied = () => {
       <div style={{ textAlign: 'center', maxWidth: '360px' }}>
         <div style={{
           width: '48px', height: '48px', borderRadius: '12px',
-          background: 'var(--primary-red-glow)', border: '1px solid rgba(227, 0, 15, 0.2)',
+          background: 'var(--primary-red-glow)', border: '1px solid rgba(223, 10, 32, 0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 1.25rem',
         }}>

@@ -9,7 +9,7 @@ import '../landing.css';
 import '../public-page.css';
 import '../markdown.css';
 
-const ACCENT = '#6366f1';
+const ACCENT = '#DF0A20';
 
 const DocumentViewer = () => {
     const { id } = useParams();

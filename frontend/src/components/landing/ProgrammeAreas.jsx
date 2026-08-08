@@ -9,7 +9,7 @@ const PROGRAMME_META = {
   },
   'Immunization / EPI': {
     icon: Syringe,
-    color: '#0d9488',
+    color: '#A10717',
     description: 'Vaccination record-keeping and tracking for the Expanded Programme on Immunization.',
   },
 };

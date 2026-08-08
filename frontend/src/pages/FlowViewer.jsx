@@ -119,7 +119,7 @@ const FlowViewer = () => {
             padding:11px 14px;
             font-size:13px;font-weight:${isCurrent ? 600 : 500};
             color:${isCurrent ? '#0f172a' : '#64748b'};
-            background:${isCurrent ? 'rgba(20,184,166,0.08)' : 'transparent'};
+            background:${isCurrent ? 'rgba(223,10,32,0.08)' : 'transparent'};
             border:none;border-top:${i > 0 ? '1px solid #f1f5f9' : 'none'};
             cursor:${isCurrent ? 'default' : 'pointer'};outline:none;font-family:inherit;
             transition:background 0.12s,color 0.12s;
@@ -134,14 +134,14 @@ const FlowViewer = () => {
             badge.textContent = 'Current';
             badge.style.cssText = `
               font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
-              background:rgba(20,184,166,0.12);color:#0f766e;
-              border:1px solid rgba(20,184,166,0.3);border-radius:4px;
+              background:rgba(223,10,32,0.12);color:#A10717;
+              border:1px solid rgba(223,10,32,0.3);border-radius:4px;
               padding:2px 7px;flex-shrink:0;
             `;
             opt.appendChild(badge);
           } else {
             opt.addEventListener('mouseenter', () => {
-              opt.style.background = 'rgba(20,184,166,0.06)';
+              opt.style.background = 'rgba(223,10,32,0.06)';
               opt.style.color = '#0f172a';
             });
             opt.addEventListener('mouseleave', () => {

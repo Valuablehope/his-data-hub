@@ -60,7 +60,7 @@ const FloatingNav = () => {
           {user ? (
             <UserMenu />
           ) : (
-            <button onClick={() => navigate('/login')} className="icon-btn" title="HIS Login" style={{ color: 'var(--teal-600)' }}>
+            <button onClick={() => navigate('/login')} className="icon-btn" title="HIS Login" style={{ color: 'var(--primary-red)' }}>
               <LogIn size={18} />
             </button>
           )}

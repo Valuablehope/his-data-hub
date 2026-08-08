@@ -22,7 +22,7 @@ const PlatformLogo = ({ link, size = 22, radius = 6 }) => {
     <span style={{
       width: size, height: size, borderRadius: radius, flexShrink: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--teal-500)', color: '#fff', fontWeight: 700, fontSize: size * 0.42,
+      background: 'var(--primary-red)', color: '#fff', fontWeight: 700, fontSize: size * 0.42,
     }}>
       {initial}
     </span>

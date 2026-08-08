@@ -12,6 +12,9 @@ const Hero = ({ onExploreClick }) => {
         marginTop: 'calc(var(--nav-clearance) * -1)',
       }}
     >
+      <span className="landing-hero-reticle landing-hero-reticle--tl" />
+      <span className="landing-hero-reticle landing-hero-reticle--tr" />
+
       <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <div className="hub-status-pill" style={{ marginBottom: '1.5rem' }}>
           <span className="hub-status-dot" />
@@ -20,15 +23,15 @@ const Hero = ({ onExploreClick }) => {
 
         <div style={{
           fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
-          color: '#5eead4', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem',
+          color: '#DF0A20', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem',
         }}>
           Health Information System · Lebanon Mission
         </div>
 
         <h1 className="landing-hero-headline" style={{
-          fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, margin: 0, color: '#fff',
+          fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, margin: 0,
         }}>
-          HIS Data Hub
+          HIS Data Hub<span className="landing-hero-cursor" />
         </h1>
 
         {/* DRAFT / PLACEHOLDER COPY — no public mission statement exists yet; replace with
@@ -45,7 +48,18 @@ const Hero = ({ onExploreClick }) => {
           <Link
             to="/login"
             className="btn btn-primary"
-            style={{ padding: '0.8rem 1.5rem', fontSize: '0.9375rem', textDecoration: 'none' }}
+            style={{
+              padding: '0.8rem 1.5rem', fontSize: '0.9375rem', textDecoration: 'none',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(223,10,32,0.35)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             <LogIn size={16} />
             HIS Login
@@ -56,19 +70,22 @@ const Hero = ({ onExploreClick }) => {
             style={{
               padding: '0.8rem 1.5rem', fontSize: '0.9375rem', color: '#fff',
               background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)',
-              cursor: 'pointer',
+              cursor: 'pointer', transition: 'background 0.2s, transform 0.2s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
             Explore the Hub
-            <ChevronDown size={16} />
+            <ChevronDown size={16} className="landing-hero-chevron" />
           </button>
         </div>
       </div>
 
       <div style={{ maxWidth: '820px', margin: '3.5rem auto 0', position: 'relative', zIndex: 1 }}>
-        <NetworkDiagram />
+        <div className="landing-hero-visual">
+          <span className="landing-hero-visual-caption">Fig. 01 — Data Topology</span>
+          <NetworkDiagram />
+        </div>
       </div>
     </section>
   );

@@ -1,6 +1,5 @@
-/* SOP document body typography (DocumentViewer.jsx). Themed with the SOP
-   section's indigo accent (#6366f1) — same color used for the SOP hero,
-   cards, and category badges in public-page.css — so a document's content
+/* SOP document body typography (DocumentViewer.jsx). Themed with the brand
+   red (#DF0A20) — the app's single accent color — so a document's content
    reads as the same product as the page chrome around it. */
 
 .markdown-body {
@@ -40,14 +39,14 @@
 }
 
 .markdown-body a {
-  color: #6366f1;
+  color: #DF0A20;
   font-weight: 600;
   text-decoration: none;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.35);
+  border-bottom: 1px solid rgba(223, 10, 32, 0.35);
   transition: border-color 0.15s;
 }
 .markdown-body a:hover {
-  border-color: #6366f1;
+  border-color: #DF0A20;
 }
 
 .markdown-body strong {
@@ -66,7 +65,7 @@
 }
 
 .markdown-body li::marker {
-  color: #6366f1;
+  color: #DF0A20;
 }
 
 .markdown-body hr {
@@ -92,8 +91,8 @@
 .markdown-body code {
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
+  background: rgba(223, 10, 32, 0.1);
+  color: #A10717;
   padding: 0.2em 0.45em;
   border-radius: 4px;
 }
@@ -105,10 +104,10 @@
 }
 
 .markdown-body blockquote {
-  border-left: 3px solid #6366f1;
+  border-left: 3px solid #DF0A20;
   padding: 0.25rem 1.25rem;
   color: var(--text-secondary);
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(223, 10, 32, 0.05);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   margin-bottom: 1.5rem;
 }
@@ -127,7 +126,7 @@
 .markdown-body th {
   text-align: left;
   padding: 0.6rem 0.85rem;
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(223, 10, 32, 0.06);
   color: var(--text-primary);
   font-weight: 700;
   border-bottom: 1px solid var(--border-color);

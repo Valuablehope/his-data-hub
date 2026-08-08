@@ -170,7 +170,7 @@ const Files = () => {
                   <button 
                     className="btn btn-ghost" 
                     onClick={() => handleDelete(file.Id)}
-                    style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(227,0,15,0.05)', color: 'var(--primary-red)' }}
+                    style={{ padding: '0.5rem', borderRadius: '50%', background: 'rgba(223,10,32,0.05)', color: 'var(--primary-red)' }}
                     title="Delete"
                   >
                     <Trash2 size={18} />

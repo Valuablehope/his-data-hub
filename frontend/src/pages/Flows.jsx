@@ -7,7 +7,7 @@ import PublicPageHero from '../components/PublicPageHero';
 import '../landing.css';
 import '../public-page.css';
 
-const ACCENT = '#14b8a6';
+const ACCENT = '#DF0A20';
 
 const Flows = () => {
   const [flows, setFlows] = useState([]);

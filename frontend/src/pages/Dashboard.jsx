@@ -25,12 +25,12 @@ function SectionLabel({ label, to, linkText = 'View all' }) {
       </div>
       {to && (
         <Link to={to} style={{
-          fontSize: '13px', fontWeight: 600, color: 'var(--teal-500)',
+          fontSize: '13px', fontWeight: 600, color: 'var(--primary-red)',
           textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px',
           transition: 'color 0.2s, text-shadow 0.2s'
         }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'var(--teal-400)'; e.currentTarget.style.textShadow = '0 0 8px rgba(20, 184, 166, 0.4)'; }}
-        onMouseLeave={e => { e.currentTarget.style.color = 'var(--teal-500)'; e.currentTarget.style.textShadow = 'none'; }}
+        onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary-red-dark)'; e.currentTarget.style.textShadow = '0 0 8px rgba(223, 10, 32, 0.4)'; }}
+        onMouseLeave={e => { e.currentTarget.style.color = 'var(--primary-red)'; e.currentTarget.style.textShadow = 'none'; }}
         >
           {linkText} <ChevronRight size={14} />
         </Link>
@@ -296,7 +296,7 @@ function ActiveGrantsList({ grants, loading }) {
                       style={{
                         fontFamily: 'var(--font-mono)', fontSize: '0.66rem', fontWeight: 700,
                         padding: '0.1rem 0.45rem', borderRadius: 'var(--radius-full)',
-                        background: 'rgba(20, 184, 166, 0.12)', color: '#14b8a6', flexShrink: 0,
+                        background: 'rgba(223, 10, 32, 0.12)', color: '#DF0A20', flexShrink: 0,
                       }}
                     >
                       {range.durationLabel}
@@ -453,7 +453,7 @@ const Dashboard = () => {
           to="/facilities" loading={loading}
         />
         <KpiTile
-          icon={CheckCircle2} color="#14b8a6"
+          icon={CheckCircle2} color="#DF0A20"
           value={data?.activeGrantsCount}
           label="Active Grants"
           sub="in coverage right now"
@@ -492,8 +492,8 @@ const Dashboard = () => {
           <div>
             <SectionLabel label="Quick Actions" />
             <div className="glass-panel" style={{ padding: '0.6rem' }}>
-              <QuickActionRow icon={BookOpen} label="New Flow Manual" to="/flow-manuals/add" color="#14b8a6" />
-              <QuickActionRow icon={FolderPlus} label="New Document" to="/sops/add" color="#6366f1" />
+              <QuickActionRow icon={BookOpen} label="New Flow Manual" to="/flow-manuals/add" color="#DF0A20" />
+              <QuickActionRow icon={FolderPlus} label="New Document" to="/sops/add" color="#DF0A20" />
               <QuickActionRow icon={Plus} label="Add Facility" to="/facilities/add" color="#3b82f6" />
               <QuickActionRow icon={UploadCloud} label="Browse Files" to="/files" color="#64748b" />
             </div>

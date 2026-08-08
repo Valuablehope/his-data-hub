@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 // this carries back-navigation. Deliberately restrained: a slim bordered
 // header in the same language as Dashboard's page header (thin accent
 // underline, eyebrow + title), not a full-bleed hero section.
-const PublicPageHero = ({ icon: Icon, eyebrow, title, subtitle, accent = '#14b8a6', stats, actions }) => {
+const PublicPageHero = ({ icon: Icon, eyebrow, title, subtitle, accent = '#DF0A20', stats, actions }) => {
   const navigate = useNavigate();
 
   return (

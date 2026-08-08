@@ -120,7 +120,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                 }}>
                     <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                        <CalendarClock size={20} color="var(--teal-600)" />
+                        <CalendarClock size={20} color="var(--primary-red)" />
                         Weekly Working Hours
                     </h2>
                     <button onClick={onClose} style={{
@@ -205,7 +205,7 @@ const ScheduleAvailabilityModal = ({ isOpen, onClose, token }) => {
                     <button type="submit" form="schedule-form" disabled={loading} style={{
                         display: 'flex', alignItems: 'center', gap: '0.375rem',
                         padding: '0.625rem 1.25rem', borderRadius: '8px', border: 'none',
-                        background: 'var(--teal-600)', color: '#fff', fontSize: '0.875rem', fontWeight: '600', cursor: 'pointer'
+                        background: 'var(--primary-red)', color: '#fff', fontSize: '0.875rem', fontWeight: '600', cursor: 'pointer'
                     }}>
                         <Save size={16} />
                         {loading ? 'Saving...' : 'Save Schedule'}
