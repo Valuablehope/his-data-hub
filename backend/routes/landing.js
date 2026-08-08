@@ -109,6 +109,29 @@ router.get('/', async (req, res) => {
             console.error('PlatformLinks not available yet:', linkErr.message);
         }
 
+        // Same defensive pattern as PlatformLinks above — Projects is a newer
+        // table, so a not-yet-migrated database shouldn't 500 the whole page.
+        let projects = [];
+        try {
+            const projectsRes = await pool.request().query(`
+                SELECT Id, Name, Description, Partner, Url,
+                       CASE WHEN LogoFileName IS NOT NULL THEN 1 ELSE 0 END AS HasLogo
+                FROM Projects
+                WHERE IsActive = 1
+                ORDER BY SortOrder, Name
+            `);
+            projects = projectsRes.recordset.map(p => ({
+                id: p.Id,
+                name: p.Name,
+                description: p.Description,
+                partner: p.Partner,
+                url: p.Url,
+                hasLogo: !!p.HasLogo,
+            }));
+        } catch (projErr) {
+            console.error('Projects not available yet:', projErr.message);
+        }
+
         const fac = facilitiesRes.recordset[0];
         const team = teamRes.recordset[0];
 
@@ -131,6 +154,7 @@ router.get('/', async (req, res) => {
             programmes: programmesRes.recordset,
             recentActivity: activityRes.recordset,
             platformLinks,
+            projects,
         });
     } catch (err) {
         console.error('Landing stats error:', err);

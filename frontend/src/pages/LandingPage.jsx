@@ -9,6 +9,7 @@ import TeamStructure from '../components/landing/TeamStructure';
 import MeetTheTeam from '../components/landing/MeetTheTeam';
 import AppsGrid from '../components/landing/AppsGrid';
 import PlatformLinksGrid from '../components/landing/PlatformLinksGrid';
+import ProjectsGrid from '../components/landing/ProjectsGrid';
 import Footer from '../components/landing/Footer';
 
 function SectionHeading({ index, label, title }) {
@@ -70,7 +71,12 @@ const LandingPage = () => {
       </div>
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '6rem 2rem 0' }}>
-        <SectionHeading index="02" label="Team Structure" title="Who We Are" />
+        <SectionHeading index="02" label="National Health System" title="Projects & Contributions" />
+        <ProjectsGrid projects={data?.projects} loading={loading} />
+      </div>
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '6rem 2rem 0' }}>
+        <SectionHeading index="03" label="Team Structure" title="Who We Are" />
         <TeamStructure />
 
         <div style={{ marginTop: '3rem' }}>
@@ -82,12 +88,12 @@ const LandingPage = () => {
       </div>
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '6rem 2rem 0' }}>
-        <SectionHeading index="03" label="Explore the Hub" title="Applications" />
+        <SectionHeading index="04" label="Explore the Hub" title="Resources & References" />
         <AppsGrid />
       </div>
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '6rem 2rem 0' }}>
-        <SectionHeading index="04" label="Connected Platforms" title="Where We Plug In" />
+        <SectionHeading index="05" label="Connected Platforms" title="Where We Plug In" />
         <PlatformLinksGrid links={data?.platformLinks} loading={loading} />
       </div>
 

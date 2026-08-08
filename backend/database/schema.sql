@@ -194,5 +194,61 @@ BEGIN
 END
 GO
 
+-- ============================================================
+-- 7. Projects
+--    Admin-managed showcase of projects/contributions to the national
+--    health system, shown in their own section on the public landing page.
+--    Distinct from dbo.ProjectLinks (per-project tool URLs, no logo).
+-- ============================================================
+IF NOT EXISTS (
+    SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Projects'
+)
+BEGIN
+    CREATE TABLE dbo.Projects (
+        Id            INT            IDENTITY(1,1) NOT NULL,
+        Name          NVARCHAR(150)  NOT NULL,
+        Description   NVARCHAR(500)  NULL,           -- short blurb, shown on the landing page card
+        Content       NVARCHAR(MAX)  NULL,            -- longer markdown body, shown on the project detail page
+        Partner       NVARCHAR(150)  NULL,
+        Url           NVARCHAR(500)  NULL,
+        LogoFileName  NVARCHAR(255)  NULL,
+        SortOrder     INT            NOT NULL CONSTRAINT DF_Projects_SortOrder DEFAULT 0,
+        IsActive      BIT            NOT NULL CONSTRAINT DF_Projects_IsActive DEFAULT 1,
+        CreatedAt     DATETIME       NOT NULL CONSTRAINT DF_Projects_CreatedAt DEFAULT GETDATE(),
+        UpdatedAt     DATETIME       NOT NULL CONSTRAINT DF_Projects_UpdatedAt DEFAULT GETDATE(),
+
+        CONSTRAINT PK_Projects PRIMARY KEY CLUSTERED (Id)
+    );
+    PRINT 'Table dbo.Projects created.';
+END
+GO
+
+-- ============================================================
+-- 8. ProjectMilestones
+--    Ordered timeline entries for a Project's detail page.
+-- ============================================================
+IF NOT EXISTS (
+    SELECT 1 FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ProjectMilestones'
+)
+BEGIN
+    CREATE TABLE dbo.ProjectMilestones (
+        Id            INT            IDENTITY(1,1) NOT NULL,
+        ProjectId     INT            NOT NULL,
+        Title         NVARCHAR(200)  NOT NULL,
+        Description   NVARCHAR(500)  NULL,
+        DateLabel     NVARCHAR(50)   NULL,             -- free-text: "March 2026", "Phase 2", "Ongoing"
+        SortOrder     INT            NOT NULL CONSTRAINT DF_ProjectMilestones_SortOrder DEFAULT 0,
+        CreatedAt     DATETIME       NOT NULL CONSTRAINT DF_ProjectMilestones_CreatedAt DEFAULT GETDATE(),
+
+        CONSTRAINT PK_ProjectMilestones PRIMARY KEY CLUSTERED (Id),
+        CONSTRAINT FK_ProjectMilestones_Projects FOREIGN KEY (ProjectId)
+            REFERENCES dbo.Projects(Id) ON DELETE CASCADE
+    );
+    PRINT 'Table dbo.ProjectMilestones created.';
+END
+GO
+
 PRINT '=== HIS Data Hub schema applied successfully ===';
 GO

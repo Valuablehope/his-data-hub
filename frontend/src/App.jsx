@@ -14,12 +14,14 @@ import FlowViewer from './pages/FlowViewer';
 import FlowBuilder from './pages/FlowBuilder';
 import DocumentViewer from './pages/DocumentViewer';
 import DocumentForm from './pages/DocumentForm';
+import ProjectDetail from './pages/ProjectDetail';
 import Facilities from './pages/Facilities';
 import FacilityDetail from './pages/FacilityDetail';
 import FacilityForm from './pages/FacilityForm';
 import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
 import PlatformLinks from './pages/PlatformLinks';
+import Projects from './pages/Projects';
 import ProjectLinks from './pages/ProjectLinks';
 import NotFound from './pages/NotFound';
 
@@ -50,6 +52,10 @@ function App() {
             <Route path="/flow-manuals" element={<Flows />} />
             <Route path="/flow-manuals/view/:id" element={<FlowViewer />} />
 
+            {/* Project detail pages — linked from the landing page's Projects
+                & Contributions section, public like SOPs/Flows. */}
+            <Route path="/projects/:id" element={<ProjectDetail />} />
+
             {/* Legacy paths — keep old bookmarks/links working */}
             <Route path="/docs" element={<Navigate to="/sops" replace />} />
             <Route path="/documentation" element={<Navigate to="/sops" replace />} />
@@ -71,6 +77,7 @@ function App() {
                 <Route index element={<Navigate to="/admin/users" replace />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="platform-links" element={<PlatformLinks />} />
+                <Route path="projects" element={<Projects />} />
               </Route>
               {/* Legacy paths — keep old bookmarks/links working */}
               <Route path="/users" element={<Navigate to="/admin/users" replace />} />

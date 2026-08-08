@@ -411,8 +411,8 @@ const UserManagement = () => {
                                 <div className="form-group">
                                     <label>Team Hierarchy <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(controls ordering/grouping on the public team page)</span></label>
                                     <select className="form-control" value={teamTier} onChange={e => setTeamTier(e.target.value)}>
-                                        <option value={1}>Leadership</option>
-                                        <option value={2}>Coordinator</option>
+                                        <option value={1}>Head of Team</option>
+                                        <option value={2}>Team Management</option>
                                         <option value={3}>Team Member</option>
                                     </select>
                                 </div>

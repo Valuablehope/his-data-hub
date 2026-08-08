@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Users, Image, ShieldCheck } from 'lucide-react';
+import { Users, Image, ShieldCheck, Briefcase } from 'lucide-react';
 
 const AdminPanel = () => {
   return (
@@ -26,6 +26,9 @@ const AdminPanel = () => {
           </NavLink>
           <NavLink to="/admin/platform-links" className={({ isActive }) => `admin-tab${isActive ? ' active' : ''}`}>
             <Image size={15} /> Platform Links
+          </NavLink>
+          <NavLink to="/admin/projects" className={({ isActive }) => `admin-tab${isActive ? ' active' : ''}`}>
+            <Briefcase size={15} /> Projects
           </NavLink>
         </div>
       </div>

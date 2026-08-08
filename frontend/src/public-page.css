@@ -163,3 +163,64 @@
   .public-header { flex-wrap: wrap; }
   .public-header-side { width: 100%; justify-content: flex-start; padding-top: 0.75rem; }
 }
+
+/* ─── Project detail — milestone timeline ────────────────────────────── */
+.project-timeline-item {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.project-timeline-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 14px;
+}
+
+.project-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary-red);
+  box-shadow: 0 0 0 4px rgba(223, 10, 32, 0.14);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.project-timeline-line {
+  flex: 1;
+  width: 2px;
+  background: var(--border-color);
+  margin-top: 4px;
+}
+
+.project-timeline-content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 2rem;
+}
+
+.project-timeline-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-red);
+  margin-bottom: 0.3rem;
+}
+
+.project-timeline-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.project-timeline-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-top: 0.35rem;
+}

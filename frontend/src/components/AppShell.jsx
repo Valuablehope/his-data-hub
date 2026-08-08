@@ -15,6 +15,7 @@ import { AuthContext } from '../context/AuthContext';
 function isStandalonePage(pathname) {
   if (pathname === '/sops' || pathname === '/flow-manuals') return true;
   if (pathname.startsWith('/flow-manuals/view/')) return true;
+  if (pathname.startsWith('/projects/')) return true;
   const sopIdMatch = pathname.match(/^\/sops\/([^/]+)$/);
   if (sopIdMatch && sopIdMatch[1] !== 'add') return true;
   return false;
