@@ -61,13 +61,13 @@ const LiveIndicators = ({ data, loading }) => {
         icon={BookOpen} color="#14b8a6"
         value={data?.flowManuals} label="Flow Manuals"
         sub="published"
-        to="/flows" loading={loading}
+        to="/flow-manuals" loading={loading}
       />
       <StatusReadout
         icon={FileText} color="#6366f1"
         value={data?.publishedDocs} label="Published SOPs"
         sub="in library"
-        to="/documentation" loading={loading}
+        to="/sops" loading={loading}
       />
       <StatusReadout
         icon={Users} color="#22c55e"

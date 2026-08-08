@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { poolPromise, sql } = require('../db');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { requireAdmin } = require('../middleware/auth');
 
-// Get all documents (metadata only)
-router.get('/', authenticateToken, async (req, res) => {
+// Get all documents (metadata only) — public, SOPs are viewable without login
+router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query('SELECT TOP 500 Id, Title, Category, UpdatedAt FROM Documents ORDER BY UpdatedAt DESC');
@@ -19,8 +19,8 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Get document content
-router.get('/:id', authenticateToken, async (req, res) => {
+// Get document content — public, SOPs are viewable without login
+router.get('/:id', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()

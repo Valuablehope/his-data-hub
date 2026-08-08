@@ -22,7 +22,7 @@ const DocumentForm = () => {
     useEffect(() => {
         // Redirect if not admin
         if (user && user.role !== 'admin') {
-            navigate('/documentation');
+            navigate('/sops');
             return;
         }
 
@@ -89,7 +89,7 @@ const DocumentForm = () => {
             });
 
             if (res.ok) {
-                navigate('/documentation');
+                navigate('/sops');
             } else {
                 const data = await res.json();
                 setError(data.error || 'Failed to save document');
@@ -109,7 +109,7 @@ const DocumentForm = () => {
     return (
         <div className="page-content">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
-                <button onClick={() => navigate('/documentation')} className="btn btn-secondary" style={{ background: 'white' }} type="button">
+                <button onClick={() => navigate('/sops')} className="btn btn-secondary" style={{ background: 'white' }} type="button">
                     <ArrowLeft size={16} /> Back
                 </button>
                 <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>{isEdit ? 'Edit Document' : 'Add New Document'}</h2>
@@ -163,7 +163,7 @@ const DocumentForm = () => {
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                        <button type="button" onClick={() => navigate('/documentation')} className="btn btn-secondary">
+                        <button type="button" onClick={() => navigate('/sops')} className="btn btn-secondary">
                             Cancel
                         </button>
                         <button type="submit" className="btn btn-primary" disabled={saving}>

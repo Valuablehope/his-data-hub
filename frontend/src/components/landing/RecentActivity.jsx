@@ -37,7 +37,7 @@ const RecentActivity = ({ items, loading }) => {
       {items.map((item, i) => {
         const meta = TYPE_META[item.Type] || TYPE_META.document;
         const Icon = meta.icon;
-        const to = item.Type === 'flow' ? `/flows/view/${item.Id}` : `/documentation/${item.Id}`;
+        const to = item.Type === 'flow' ? `/flow-manuals/view/${item.Id}` : `/sops/${item.Id}`;
         const date = new Date(item.ActivityDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
         return (

@@ -2,7 +2,23 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE_URL, fetchApi } from '../config';
-import { FileText, Search, BookOpen, ShieldCheck, Activity, Map } from 'lucide-react';
+import { FileText, Search, BookOpen, ShieldCheck, Activity, Map, ArrowUpRight, Plus } from 'lucide-react';
+import PublicPageHero from '../components/PublicPageHero';
+import '../landing.css';
+import '../public-page.css';
+
+const ACCENT = '#6366f1';
+
+const CATEGORY_META = {
+    sop: { icon: Activity, color: '#14b8a6' },
+    policy: { icon: ShieldCheck, color: '#E3000F' },
+    manual: { icon: BookOpen, color: '#3b82f6' },
+    strategy: { icon: Map, color: '#f59e0b' },
+};
+
+function getCategoryMeta(category) {
+    return CATEGORY_META[category?.toLowerCase()] || { icon: FileText, color: '#64748b' };
+}
 
 const Documentation = () => {
     const { user, token, logout } = useContext(AuthContext);
@@ -19,15 +35,15 @@ const Documentation = () => {
                 const res = await fetchApi(`${API_BASE_URL}/docs`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 if (res.status === 401) {
                     logout();
                     navigate('/login');
                     return;
                 }
-                
+
                 if (!res.ok) throw new Error('Failed to fetch documents');
-                
+
                 const data = await res.json();
                 setDocs(data);
             } catch (err) {
@@ -49,144 +65,119 @@ const Documentation = () => {
         return matchesSearch && matchesCategory;
     });
 
-    const getCategoryIcon = (category) => {
-        switch (category?.toLowerCase()) {
-            case 'sop': return <Activity size={18} color="var(--teal-600)" />;
-            case 'policy': return <ShieldCheck size={18} color="var(--red-600)" />;
-            case 'manual': return <BookOpen size={18} color="var(--blue-600)" />;
-            case 'strategy': return <Map size={18} color="var(--amber-600)" />;
-            default: return <FileText size={18} color="var(--slate-500)" />;
-        }
-    };
-
     return (
-        <div className="page-content">
-            <div className="card-header" style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{
-                        width: '40px', height: '40px', borderRadius: '10px',
-                        background: 'linear-gradient(135deg, var(--amber-500), var(--orange-600))',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
-                    }}>
-                        <FileText size={20} />
-                    </div>
-                    <div>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0, letterSpacing: '-0.02em' }}>Documentation & SOPs</h2>
-                        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.875rem' }}>Browse standard operating procedures, manuals, and policies.</p>
-                    </div>
-                </div>
-                {user?.role === 'admin' && (
-                    <button onClick={() => navigate('/documentation/add')} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <FileText size={16} /> Add New SOP
+        <div className="public-page-wrap">
+            <PublicPageHero
+                icon={FileText}
+                eyebrow="SOP LIBRARY"
+                title="Standard Operating Procedures"
+                subtitle="Policies, manuals, and field guidance for the HIS Team — open to browse, no login required."
+                accent={ACCENT}
+                stats={[
+                    { value: docs.length, label: 'Documents' },
+                    { value: Math.max(categories.length - 1, 0), label: 'Categories' },
+                ]}
+                actions={user?.role === 'admin' && (
+                    <button
+                        onClick={() => navigate('/sops/add')}
+                        className="btn btn-primary"
+                    >
+                        <Plus size={16} /> Add New SOP
                     </button>
                 )}
-            </div>
+            />
 
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-                <div style={{ position: 'relative', flex: '1 1 300px' }}>
-                    <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                    <input 
-                        type="text" 
-                        placeholder="Search documentation..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="form-control"
-                        style={{ paddingLeft: '2.75rem', width: '100%', height: '42px' }}
-                    />
-                </div>
-                
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    {categories.map(cat => (
-                        <button 
-                            key={cat}
-                            onClick={() => setSelectedCategory(cat)}
-                            style={{
-                                padding: '0.5rem 1rem',
-                                borderRadius: '100px',
-                                border: '1px solid',
-                                borderColor: selectedCategory === cat ? 'var(--amber-500)' : 'var(--border-color)',
-                                background: selectedCategory === cat ? 'var(--amber-500)' : 'transparent',
-                                color: selectedCategory === cat ? '#fff' : 'var(--text-secondary)',
-                                fontWeight: '500',
-                                fontSize: '0.875rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            <div>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                    <div style={{ position: 'relative', flex: '1 1 300px' }}>
+                        <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                        <input
+                            type="text"
+                            placeholder="Search documentation..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="form-control"
+                            style={{ paddingLeft: '2.75rem', width: '100%', height: '46px' }}
+                        />
+                    </div>
 
-            {loading ? (
-                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>Loading documents...</div>
-            ) : error ? (
-                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--primary-red)' }}>{error}</div>
-            ) : filteredDocs.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                    <FileText size={48} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
-                    <p>No documents found matching your criteria.</p>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                style={{
+                                    padding: '0.55rem 1.1rem',
+                                    borderRadius: '100px',
+                                    border: '1px solid',
+                                    borderColor: selectedCategory === cat ? ACCENT : 'var(--border-color)',
+                                    background: selectedCategory === cat ? ACCENT : 'transparent',
+                                    color: selectedCategory === cat ? '#fff' : 'var(--text-secondary)',
+                                    fontWeight: 600,
+                                    fontSize: '0.875rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            ) : (
-                <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
-                    gap: '1.5rem' 
-                }}>
-                    {filteredDocs.map(doc => (
-                        <div 
-                            key={doc.Id} 
-                            onClick={() => navigate(`/documentation/${doc.Id}`)}
-                            style={{
-                                background: 'rgba(255, 255, 255, 0.6)',
-                                backdropFilter: 'blur(12px)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '12px',
-                                padding: '1.5rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '1rem'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)';
-                                e.currentTarget.style.borderColor = 'var(--amber-300)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'none';
-                                e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.borderColor = 'var(--border-color)';
-                            }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ 
-                                    display: 'flex', alignItems: 'center', gap: '0.5rem', 
-                                    padding: '0.25rem 0.75rem', borderRadius: '100px', 
-                                    background: 'var(--background)', border: '1px solid var(--border-color)',
-                                    fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)'
-                                }}>
-                                    {getCategoryIcon(doc.Category)}
-                                    {doc.Category}
+
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>Loading documents...</div>
+                ) : error ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--primary-red)' }}>{error}</div>
+                ) : filteredDocs.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+                        <FileText size={48} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+                        <p>No documents found matching your criteria.</p>
+                    </div>
+                ) : (
+                    <div className="public-card-grid">
+                        {filteredDocs.map(doc => {
+                            const meta = getCategoryMeta(doc.Category);
+                            const Icon = meta.icon;
+                            return (
+                                <div
+                                    key={doc.Id}
+                                    className="hub-panel public-card"
+                                    style={{ '--hub-accent': meta.color }}
+                                    onClick={() => navigate(`/sops/${doc.Id}`)}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                        <div style={{
+                                            width: '38px', height: '38px', borderRadius: '10px',
+                                            background: `${meta.color}18`, color: meta.color,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            border: `1px solid ${meta.color}30`, flexShrink: 0,
+                                        }}>
+                                            <Icon size={18} strokeWidth={2.25} />
+                                        </div>
+                                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                                            {new Date(doc.UpdatedAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <div className="hub-eyebrow" style={{ color: meta.color, marginBottom: '0.4rem' }}>{doc.Category}</div>
+                                        <h3 style={{ margin: 0, fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                                            {doc.Title}
+                                        </h3>
+                                    </div>
+
+                                    <div className="public-card-footer">
+                                        <span className="public-card-cta">
+                                            Read Document <ArrowUpRight size={14} />
+                                        </span>
+                                    </div>
                                 </div>
-                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                    {new Date(doc.UpdatedAt).toLocaleDateString()}
-                                </span>
-                            </div>
-                            
-                            <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '600', color: 'var(--text-primary)', lineHeight: 1.4 }}>
-                                {doc.Title}
-                            </h3>
-                            
-                            <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', color: 'var(--amber-600)', fontSize: '0.875rem', fontWeight: '500' }}>
-                                Read Document &rarr;
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

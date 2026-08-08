@@ -57,7 +57,7 @@ const FlowBuilder = () => {
           } else {
             // Un-editable flow
             alert('This flow was created manually and does not have a visual builder state. You can only view it.');
-            navigate(`/flows/view/${id}`);
+            navigate(`/flow-manuals/view/${id}`);
           }
           setLoading(false);
         })
@@ -167,7 +167,7 @@ const FlowBuilder = () => {
   align-self: flex-start;
   height: calc(100vh - 100px);
   overflow-y: auto;
-  background: var(--teal-900, #03302A);
+  background: var(--teal-900, #134e4a);
   display: flex;
   flex-direction: column;
 }
@@ -243,7 +243,7 @@ const FlowBuilder = () => {
       })
       .then(data => {
         setSaving(false);
-        navigate(`/flows/view/${data.Id}`);
+        navigate(`/flow-manuals/view/${data.Id}`);
       })
       .catch(err => {
         console.error(err);
@@ -261,7 +261,7 @@ const FlowBuilder = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
         <button 
           className="btn btn-ghost" 
-          onClick={() => navigate('/flows')}
+          onClick={() => navigate('/flow-manuals')}
           style={{ padding: '0.5rem', borderRadius: '100px' }}
         >
           <ArrowLeft size={20} />
@@ -433,7 +433,7 @@ const FlowBuilder = () => {
         ))}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-          <button type="button" className="btn btn-ghost" onClick={() => navigate('/flows')}>Cancel</button>
+          <button type="button" className="btn btn-ghost" onClick={() => navigate('/flow-manuals')}>Cancel</button>
           <button type="submit" className="btn btn-primary" disabled={saving}>
             <Save size={18} /> {saving ? 'Compiling & Saving...' : 'Save Flow Manual'}
           </button>

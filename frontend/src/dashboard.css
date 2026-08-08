@@ -2,7 +2,10 @@
 
 .dashboard-hero-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  /* Capped max width (not 1fr) so a short row — e.g. only 2 KPI tiles — doesn't
+     stretch each tile to fill the leftover space; see the same fix on
+     .landing-team-people-grid for why 1fr is the wrong tool here. */
+  grid-template-columns: repeat(auto-fit, minmax(190px, 260px));
   gap: 1.25rem;
 }
 

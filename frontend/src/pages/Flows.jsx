@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Plus, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Network, Plus, FileText, ArrowUpRight } from 'lucide-react';
 import { API_BASE_URL, fetchApi } from '../config';
 import { AuthContext } from '../context/AuthContext';
+import PublicPageHero from '../components/PublicPageHero';
+import '../landing.css';
+import '../public-page.css';
+
+const ACCENT = '#14b8a6';
 
 const Flows = () => {
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
+  const { token, hasRole } = useContext(AuthContext);
+  const canManage = hasRole('admin', 'HIS_TEAM');
 
   useEffect(() => {
     fetchApi(`${API_BASE_URL}/flows`, {
@@ -26,69 +32,86 @@ const Flows = () => {
   }, [token]);
 
   return (
-    <div className="page-content">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-        <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <BookOpen size={28} color="var(--primary-red)" />
-            Flow Manuals
-          </h1>
-          <p className="page-subtitle">Comprehensive operational documentation for system workflows.</p>
-        </div>
-        
-        <button 
-          className="btn btn-primary"
-          onClick={() => navigate('/flows/add')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <Plus size={18} /> New Flow Manual
-        </button>
-      </div>
+    <div className="public-page-wrap">
+      <PublicPageHero
+        icon={Network}
+        eyebrow="FLOW MANUALS"
+        title="Data Flow Manuals"
+        subtitle="Step-by-step operational documentation for how data moves across HIS systems — open to browse, no login required."
+        accent={ACCENT}
+        stats={[{ value: flows.length, label: 'Manuals' }]}
+        actions={canManage && (
+          <button
+            onClick={() => navigate('/flow-manuals/add')}
+            className="btn btn-primary"
+          >
+            <Plus size={16} /> New Flow Manual
+          </button>
+        )}
+      />
 
-      <div className="bento-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+      <div>
         {loading ? (
-          <div className="bento-item" style={{ gridColumn: '1 / -1', padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
             Loading flow manuals...
           </div>
         ) : flows.length === 0 ? (
-          <div className="bento-item" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ padding: '4rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <FileText size={48} color="var(--border-color)" style={{ marginBottom: '1rem' }} />
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>No Manuals Found</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', maxWidth: '400px' }}>
-              There are currently no flow manuals documented in the system. Create your first manual to establish operational guidelines.
+              There are currently no flow manuals documented in the system.{canManage && ' Create your first manual to establish operational guidelines.'}
             </p>
-            <button className="btn btn-primary" onClick={() => navigate('/flows/add')}>
-              Create Flow Manual
-            </button>
+            {canManage && (
+              <button className="btn btn-primary" onClick={() => navigate('/flow-manuals/add')}>
+                Create Flow Manual
+              </button>
+            )}
           </div>
         ) : (
-          flows.map(flow => (
-            <div key={flow.Id} className="bento-item" style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                {flow.SystemName || 'System'} · {flow.Program || 'Program'}
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                {flow.Title}
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem', flex: 1 }}>
-                {flow.Subtitle || 'No description provided.'}
-              </p>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: 'auto' }}>
-                <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  <span>v{flow.Version || '1.0'}</span>
-                  <span>{flow.DocumentDate || new Date(flow.CreatedAt).toLocaleDateString()}</span>
+          <div className="public-card-grid">
+            {flows.map(flow => (
+              <div
+                key={flow.Id}
+                className="hub-panel public-card"
+                style={{ '--hub-accent': ACCENT }}
+                onClick={() => navigate(`/flow-manuals/view/${flow.Id}`)}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{
+                    width: '38px', height: '38px', borderRadius: '10px',
+                    background: `${ACCENT}18`, color: ACCENT,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: `1px solid ${ACCENT}30`, flexShrink: 0,
+                  }}>
+                    <Network size={18} strokeWidth={2.25} />
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    v{flow.Version || '1.0'}
+                  </span>
                 </div>
-                <Link 
-                  to={`/flows/view/${flow.Id}`}
-                  className="btn btn-primary"
-                  style={{ padding: '0.4rem 1rem', fontSize: '0.875rem' }}
-                >
-                  View Manual
-                </Link>
+
+                <div>
+                  <div className="hub-eyebrow" style={{ color: ACCENT, marginBottom: '0.4rem' }}>
+                    {flow.SystemName || 'System'} · {flow.Program || 'Program'}
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.0625rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                    {flow.Title}
+                  </h3>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.4rem', lineHeight: 1.5 }}>
+                    {flow.Subtitle || 'No description provided.'}
+                  </p>
+                </div>
+
+                <div className="public-card-footer">
+                  <span>{flow.DocumentDate || new Date(flow.CreatedAt).toLocaleDateString()}</span>
+                  <span className="public-card-cta">
+                    View Manual <ArrowUpRight size={14} />
+                  </span>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

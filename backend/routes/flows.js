@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { poolPromise } = require('../db');
 const sanitizeHtml = require('sanitize-html');
-const { authenticateToken, requireContentManager } = require('../middleware/auth');
+const { requireContentManager } = require('../middleware/auth');
 
-// Get all flows — one card per version group (latest version wins)
-router.get('/', authenticateToken, async (req, res) => {
+// Get all flows — one card per version group (latest version wins). Public,
+// Flow manuals are viewable without login.
+router.get('/', async (req, res) => {
     try {
         const pool = await poolPromise;
         let result;
@@ -39,8 +40,8 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Get single flow by ID (includes sibling versions if FlowGroupId is set)
-router.get('/:id', authenticateToken, async (req, res) => {
+// Get single flow by ID (includes sibling versions if FlowGroupId is set) — public
+router.get('/:id', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request()

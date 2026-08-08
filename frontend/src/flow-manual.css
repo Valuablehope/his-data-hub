@@ -1,15 +1,26 @@
-/* ─── CUSTOM BRANDING ─── */
-:root {
-  --teal-900: #2C0003;
-  --teal-800: #5C0006;
-  --teal-700: #8C0009;
-  --teal-600: #BC000C;
-  --teal-500: #E3000F;
-  --teal-400: #F04C56;
-  --teal-300: #F68B91;
-  --teal-200: #FBC5C8;
-  --teal-100: #FDE8E9;
-  --teal-50:  #FFF5F6;
+/* ─── CUSTOM BRANDING ───
+   Scoped to .flow-container-wrap (not :root) — these used to be declared
+   globally, which silently overrode index.css's identically named teal,
+   slate, and radius tokens for the ENTIRE app (last stylesheet loaded wins
+   ties on :root custom properties), not just flow manual content. Every
+   consumer below is already nested under .flow-container-wrap, so scoping
+   here changes nothing structurally — it only stops the leak.
+   The teal ramp itself is also corrected to genuine teal: it was carrying
+   red hex values under "teal" names (a legacy rebrand that never updated
+   the variable names), which made Flows content render in red while the
+   surrounding app now brands Flows in teal (#14b8a6) — and made the
+   infobox/badge/role "teal" variant literally render as red. */
+.flow-container-wrap {
+  --teal-900: #134e4a;
+  --teal-800: #115e59;
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-400: #2dd4bf;
+  --teal-300: #5eead4;
+  --teal-200: #99f6e4;
+  --teal-100: #ccfbf1;
+  --teal-50:  #f0fdfa;
   --slate-950: #0a0a0a;
   --slate-900: #171717;
   --slate-800: #262626;
@@ -66,6 +77,14 @@
   background: var(--teal-900);
   display: flex;
   flex-direction: column;
+}
+
+/* The public flow-manual view (/flow-manuals/view/:id) renders with no
+   floating nav (see AppShell's isStandalonePage), so main-content has no
+   top padding to clear — the sidebar's offset collapses to 0 there. */
+.main-content--no-nav .flow-container-wrap .sidebar {
+  top: 0;
+  height: 100vh;
 }
 
 .flow-container-wrap .sidebar-brand {
@@ -131,7 +150,7 @@
 
 .flow-container-wrap .nav-item.active {
   color: #fff;
-  background: rgba(227,0,15,.1);
+  background: rgba(20,184,166,.14);
   border-left-color: var(--teal-400);
   font-weight: 500;
 }
@@ -161,11 +180,26 @@
 }
 
 /* ─── HERO ───────────────────────────────────────── */
+/* Compact bordered header, not a full-bleed banner — matches the restrained
+   language used for the SOP/Flows list & SOP document pages (public-page.css,
+   markdown.css): a light surface, a thin accent underline, moderate title
+   size, rather than a large dark gradient block. */
 .flow-container-wrap .hero {
-  background: linear-gradient(135deg, var(--teal-800) 0%, var(--teal-900) 60%, var(--slate-900) 100%);
-  padding: 80px 64px 72px;
+  background: var(--slate-50);
+  border-bottom: 1px solid var(--slate-200);
+  padding: 40px 56px 32px;
   position: relative;
   overflow: hidden;
+}
+
+.flow-container-wrap .hero::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 56px;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--teal-500), transparent);
 }
 
 .flow-container-wrap .hero-content { position: relative; z-index: 1; max-width: var(--content-max); }
@@ -174,52 +208,53 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(227,0,15,.12);
-  border: 1px solid rgba(227,0,15,.25);
+  background: rgba(20,184,166,.08);
+  border: 1px solid rgba(20,184,166,.25);
   border-radius: 20px;
-  padding: 5px 14px;
+  padding: 4px 12px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--teal-300);
-  margin-bottom: 28px;
+  color: var(--teal-700);
+  margin-bottom: 18px;
 }
 
 .flow-container-wrap .hero-tag-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--teal-400);
+  background: var(--teal-500);
 }
 
 .flow-container-wrap .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 52px);
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 16px;
-  letter-spacing: -.02em;
+  font-size: clamp(22px, 2.6vw, 30px);
+  color: var(--slate-900);
+  line-height: 1.2;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
 }
 
 .flow-container-wrap .hero h1 em {
   font-style: italic;
-  color: var(--teal-300);
+  color: var(--teal-600);
 }
 
 .flow-container-wrap .hero-sub {
-  font-size: 16px;
-  color: var(--teal-200);
+  font-size: 14px;
+  color: var(--slate-600);
   max-width: 620px;
-  line-height: 1.65;
-  margin-bottom: 40px;
-  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-weight: 400;
 }
 
 .flow-container-wrap .hero-meta {
   display: flex;
   gap: 0;
   flex-wrap: wrap;
-  border: 1px solid rgba(255,255,255,.1);
+  background: #fff;
+  border: 1px solid var(--slate-200);
   border-radius: var(--radius-md);
   overflow: hidden;
   max-width: 620px;
@@ -228,8 +263,8 @@
 .flow-container-wrap .hero-meta-item {
   flex: 1;
   min-width: 120px;
-  padding: 14px 20px;
-  border-right: 1px solid rgba(255,255,255,.08);
+  padding: 10px 16px;
+  border-right: 1px solid var(--slate-200);
 }
 
 .flow-container-wrap .hero-meta-item:last-child { border-right: none; }
@@ -239,14 +274,14 @@
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--teal-500);
+  color: var(--teal-600);
   margin-bottom: 4px;
 }
 
 .flow-container-wrap .hero-meta-value {
   font-size: 13px;
-  font-weight: 500;
-  color: #fff;
+  font-weight: 600;
+  color: var(--slate-900);
 }
 
 /* ─── CONTENT AREA ───────────────────────────────── */

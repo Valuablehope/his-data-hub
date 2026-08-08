@@ -1,0 +1,165 @@
+/* SOPs (/sops) and Flows (/flow-manuals) — standalone public pages, no
+   floating nav. Header matches Dashboard's page-header language (thin
+   accent underline, eyebrow + gradient title) rather than a full-bleed
+   hero — restrained and consistent with the rest of the authenticated app,
+   not a separate "landing page" treatment. */
+
+.public-page-wrap {
+  padding: 2rem 2.5rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.public-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.public-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--hub-accent, var(--primary-red)), transparent);
+}
+
+.public-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.public-back-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+  border-color: rgba(0, 0, 0, 0.14);
+  transform: translateX(-2px);
+}
+
+.public-header-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.public-header-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+}
+
+.public-header-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.public-header-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.public-header-side {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+  padding-top: 0.2rem;
+}
+
+.public-header-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.public-header-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.public-header-stat-label {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.2rem;
+}
+
+/* ─── Content grid ────────────────────────────────────────────────────── */
+.public-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.public-card {
+  padding: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+}
+
+.public-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.public-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: var(--hub-accent, var(--primary-red));
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+  .public-page-wrap { padding: 1.5rem 1.25rem 2.5rem; }
+  .public-header { flex-wrap: wrap; }
+  .public-header-side { width: 100%; justify-content: flex-start; padding-top: 0.75rem; }
+}

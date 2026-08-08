@@ -9,7 +9,8 @@ import { jsPDF } from 'jspdf';
 const FlowViewer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
+  const { token, hasRole } = useContext(AuthContext);
+  const canManage = hasRole('admin', 'HIS_TEAM');
   const [flow, setFlow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,9 +66,9 @@ const FlowViewer = () => {
         trigger.className = 'ver-trigger';
         trigger.style.cssText = `
           display:inline-flex;align-items:center;gap:7px;
-          font-size:13px;font-weight:600;color:#fff;font-family:inherit;
-          background:rgba(255,255,255,0.09);
-          border:1px solid rgba(255,255,255,0.18);
+          font-size:13px;font-weight:600;color:#0f172a;font-family:inherit;
+          background:#fff;
+          border:1px solid #e2e8f0;
           border-radius:7px;padding:5px 10px 5px 12px;
           cursor:pointer;outline:none;line-height:1;user-select:none;
           transition:background 0.15s,border-color 0.15s;
@@ -89,10 +90,10 @@ const FlowViewer = () => {
         panel.style.cssText = `
           display:none;position:fixed;z-index:9999;
           min-width:210px;
-          background:rgba(8,26,32,0.97);
-          border:1px solid rgba(255,255,255,0.11);
+          background:#fff;
+          border:1px solid #e2e8f0;
           border-radius:10px;
-          box-shadow:0 16px 48px rgba(0,0,0,0.55),0 2px 8px rgba(0,0,0,0.3);
+          box-shadow:0 16px 40px rgba(15,23,42,0.14),0 2px 8px rgba(15,23,42,0.08);
           overflow:hidden;
           font-family:inherit;
         `;
@@ -102,8 +103,8 @@ const FlowViewer = () => {
         header.style.cssText = `
           padding:9px 14px 8px;
           font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
-          color:rgba(255,255,255,0.28);
-          border-bottom:1px solid rgba(255,255,255,0.07);
+          color:#94a3b8;
+          border-bottom:1px solid #f1f5f9;
         `;
         header.textContent = 'Switch Version';
         panel.appendChild(header);
@@ -117,9 +118,9 @@ const FlowViewer = () => {
             width:100%;text-align:left;
             padding:11px 14px;
             font-size:13px;font-weight:${isCurrent ? 600 : 500};
-            color:${isCurrent ? '#fff' : 'rgba(255,255,255,0.6)'};
-            background:${isCurrent ? 'rgba(255,255,255,0.07)' : 'transparent'};
-            border:none;border-top:${i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none'};
+            color:${isCurrent ? '#0f172a' : '#64748b'};
+            background:${isCurrent ? 'rgba(20,184,166,0.08)' : 'transparent'};
+            border:none;border-top:${i > 0 ? '1px solid #f1f5f9' : 'none'};
             cursor:${isCurrent ? 'default' : 'pointer'};outline:none;font-family:inherit;
             transition:background 0.12s,color 0.12s;
           `;
@@ -133,23 +134,23 @@ const FlowViewer = () => {
             badge.textContent = 'Current';
             badge.style.cssText = `
               font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
-              background:rgba(20,184,166,0.18);color:rgba(94,234,212,0.85);
-              border:1px solid rgba(94,234,212,0.18);border-radius:4px;
+              background:rgba(20,184,166,0.12);color:#0f766e;
+              border:1px solid rgba(20,184,166,0.3);border-radius:4px;
               padding:2px 7px;flex-shrink:0;
             `;
             opt.appendChild(badge);
           } else {
             opt.addEventListener('mouseenter', () => {
-              opt.style.background = 'rgba(255,255,255,0.07)';
-              opt.style.color = '#fff';
+              opt.style.background = 'rgba(20,184,166,0.06)';
+              opt.style.color = '#0f172a';
             });
             opt.addEventListener('mouseleave', () => {
               opt.style.background = 'transparent';
-              opt.style.color = 'rgba(255,255,255,0.6)';
+              opt.style.color = '#64748b';
             });
             opt.addEventListener('click', e => {
               e.stopPropagation();
-              navigate(`/flows/view/${v.Id}`);
+              navigate(`/flow-manuals/view/${v.Id}`);
             });
           }
 
@@ -165,21 +166,21 @@ const FlowViewer = () => {
           panel.style.top  = `${rect.bottom + 6}px`;
           panel.style.left = `${rect.left}px`;
           panel.style.display = 'block';
-          trigger.style.background   = 'rgba(255,255,255,0.15)';
-          trigger.style.borderColor  = 'rgba(255,255,255,0.28)';
+          trigger.style.background   = '#f8fafc';
+          trigger.style.borderColor  = '#cbd5e1';
           chevronWrap.style.transform = 'rotate(180deg)';
         };
 
         closePanel = () => {
           isOpen = false;
           panel.style.display = 'none';
-          trigger.style.background  = 'rgba(255,255,255,0.09)';
-          trigger.style.borderColor = 'rgba(255,255,255,0.18)';
+          trigger.style.background  = '#fff';
+          trigger.style.borderColor = '#e2e8f0';
           chevronWrap.style.transform = 'rotate(0deg)';
         };
 
-        trigger.addEventListener('mouseenter', () => { if (!isOpen) trigger.style.background = 'rgba(255,255,255,0.13)'; });
-        trigger.addEventListener('mouseleave', () => { if (!isOpen) trigger.style.background = 'rgba(255,255,255,0.09)'; });
+        trigger.addEventListener('mouseenter', () => { if (!isOpen) trigger.style.background = '#f8fafc'; });
+        trigger.addEventListener('mouseleave', () => { if (!isOpen) trigger.style.background = '#fff'; });
         trigger.addEventListener('click', e => { e.stopPropagation(); isOpen ? closePanel() : openPanel(); });
 
         valueEl.innerHTML = '';
@@ -326,80 +327,57 @@ const FlowViewer = () => {
   };
 
   if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading manual...</div>;
+    return <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>Loading manual...</div>;
   }
 
   if (error || !flow) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h3>Error loading manual</h3>
-        <p>{error}</p>
-        <button className="btn btn-secondary" onClick={() => navigate('/flows')}>Back to Manuals</button>
+      <div style={{ textAlign: 'center', padding: '4rem 2.5rem' }}>
+        <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Error loading manual</h3>
+        <p style={{ color: 'var(--primary-red)', marginBottom: '1.5rem' }}>{error}</p>
+        <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Back
+        </button>
       </div>
     );
   }
 
+  const toolbarBtnStyle = {
+    display: 'flex', alignItems: 'center', gap: '0.5rem',
+    padding: '0.5rem 1rem', borderRadius: '100px',
+    border: '1px solid var(--border-color)', background: 'var(--surface-color)',
+    cursor: 'pointer', fontWeight: 600, fontSize: '0.8125rem', color: 'var(--text-primary)',
+    transition: 'all 0.2s ease',
+  };
+
   return (
     <div style={{ position: 'relative', background: 'var(--bg-color)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '0 2rem 1rem 2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-        <button
-          onClick={() => navigate(`/flows/edit/${id}`)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'var(--primary-red)',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '100px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-            cursor: 'pointer',
-            fontWeight: 600,
-            color: 'white'
-          }}
-        >
-          <Edit3 size={16} /> Edit Flow
+      <div style={{ padding: '1.25rem 2rem 1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+        <button onClick={() => navigate(-1)} style={toolbarBtnStyle}>
+          <ArrowLeft size={16} /> Back
         </button>
-        <button
-          onClick={exportPDF}
-          disabled={exporting}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: exporting ? 'var(--surface-hover)' : 'var(--surface-color)',
-            border: '1px solid var(--border-color)',
-            padding: '0.5rem 1rem',
-            borderRadius: '100px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-            cursor: exporting ? 'not-allowed' : 'pointer',
-            fontWeight: 600,
-            color: exporting ? 'var(--text-muted)' : 'var(--text-primary)',
-            opacity: exporting ? 0.7 : 1,
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <Download size={16} style={exporting ? { animation: 'spin 1s linear infinite' } : {}} />
-          {exporting ? 'Exporting…' : 'Export PDF'}
-        </button>
-        <button
-          onClick={() => navigate('/flows')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'var(--surface-color)',
-            border: '1px solid var(--border-color)',
-            padding: '0.5rem 1rem',
-            borderRadius: '100px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-            cursor: 'pointer',
-            fontWeight: 600,
-            color: 'var(--text-primary)'
-          }}
-        >
-          <ArrowLeft size={16} /> Back to Library
-        </button>
+
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          {canManage && (
+            <button onClick={() => navigate(`/flow-manuals/edit/${id}`)} className="btn btn-primary" style={{ borderRadius: '100px' }}>
+              <Edit3 size={16} /> Edit Flow
+            </button>
+          )}
+          <button
+            onClick={exportPDF}
+            disabled={exporting}
+            style={{
+              ...toolbarBtnStyle,
+              background: exporting ? 'var(--surface-hover)' : 'var(--surface-color)',
+              cursor: exporting ? 'not-allowed' : 'pointer',
+              color: exporting ? 'var(--text-muted)' : 'var(--text-primary)',
+              opacity: exporting ? 0.7 : 1,
+            }}
+          >
+            <Download size={16} style={exporting ? { animation: 'spin 1s linear infinite' } : {}} />
+            {exporting ? 'Exporting…' : 'Export PDF'}
+          </button>
+        </div>
       </div>
 
       {/* Inject raw HTML */}
